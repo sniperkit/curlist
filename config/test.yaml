@@ -1,0 +1,5 @@
+db:
+  dialect: sqlite
+  storage: './sqlite/database_test.sqlite'
+  database: database_test
+  logging: false

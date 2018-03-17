@@ -1,0 +1,89 @@
+{% import "views/macros/pagination.html.twig" as pag %}
+
+{% extends "views/layout.html.twig" %}
+
+{% block content %}
+
+<div class="page-header" style="margin-top: 0;">
+  <h2 style="margin-top: 10px;">Changelog</h2>
+  <h4 class="text-left text-muted">Showing history of changes</h4>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Item</th>
+      <th>User</th>
+      <th>JSON</th>
+      <th>Is first</th>
+      <th>Created At</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in rows %}
+  <tr>
+
+    <td>
+      {{ row.id }}
+    </td>
+    <td>
+      <a href="#" onclick="return showItem({{ row.item_id }})">{{ row.item_id }}</a>
+    </td>
+    <td>
+      {% if row.User %}
+      user {{ row.User.id }}
+      {% endif %}
+    </td>
+    <td>
+      {% for key, val in row.json %}
+      {% set val1 = row.old_json[key] | join(',') %}
+      {% set val2 = row.json[key] | join(',') %}
+
+      {% if row.old_json and val1 != val2 | join(',') %}
+      {#{{ key }}<br />
+      {{ val1 }} <> {{ val2 }}<br />#}
+
+      {#{{ diff(val1, val2) | debug }}#}
+
+      <strong>{{ key }}</strong><br />
+      {% for chunk in diff(val1, val2) %}
+      <span style="{% if chunk.removed %}color: red;{% elif chunk.added %}color: green;{% endif %}">{{ chunk.value }}</span>
+      {% endfor %}
+      <br />
+
+
+      {% endif %}
+      {% endfor %}
+      {#{{ row.json | debug }}#}
+      {#{{ row.old_json | debug }}#}
+    </td>
+    <td>
+      {% if row.is_first %}
+        <span style="">first</span>
+      {% endif %}
+    </td>
+    <td>
+      {{ row.createdAt | date() }}
+    </td>
+  </tr>
+
+  {% endfor %}
+
+</table>
+
+<div class="clearfix"></div>
+
+<div class="pagination-bar text-center">
+  {{ pag.pagination_render(pagination, {pages_count: 8}) }}
+</div>
+
+
+{#<pre>
+{{ rows | debug }}
+</pre>#}
+
+{% endblock %}
+
+{% block before_body_end %}
+{% endblock %}

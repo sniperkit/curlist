@@ -1,0 +1,54 @@
+{
+  "name": "curlist-tool",
+  "version": "1.0.0",
+  "description": "The experimental tool for creating curated lists",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_ENV=test mocha $(find src -name 'test*Spec.js')",
+    "start": "node index.js",
+    "postinstall": "bower cache clean --allow-root && bower install --allow-root"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itemsapi/curlist.git"
+  },
+  "author": "Mateusz Rzepa",
+  "license": "GPL-3",
+  "bugs": {
+    "url": "https://github.com/itemsapi/curlist/issues"
+  },
+  "homepage": "https://github.com/itemsapi/curlist#readme",
+  "engines": {
+    "node": ">=8.x"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.2",
+    "config": "^1.30.0",
+    "connect-session-sequelize": "^5.2.1",
+    "cookie-parser": "^1.4.3",
+    "diff": "^3.5.0",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "i18n": "^0.8.3",
+    "itemsjs": "^1.0.39",
+    "js-yaml": "^3.11.0",
+    "lodash": "^4.17.5",
+    "moment": "^2.21.0",
+    "nunjucks": "^3.1.2",
+    "passport": "^0.4.0",
+    "passport-google-oauth": "^1.0.0",
+    "pg": "^7.4.1",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.36.0",
+    "sequelize-cli": "^4.0.0",
+    "sqlite3": "^3.1.13",
+    "urijs": "^1.19.1",
+    "vuejs-paginate": "^1.6.0",
+    "winston": "^2.4.0"
+  },
+  "devDependencies": {
+    "bower": "^1.8.2",
+    "pg-native": "^2.2.0"
+  }
+}

@@ -1,0 +1,62 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title" id="myModalLabel">View item: {{ item.id }}</h4>
+</div>
+<div class="modal-body item-view">
+  <div class="row" style="margin-bottom: 10px;">
+    <div class="col-sm-3">
+      <img src="{{ item.image }}" />
+    </div>
+    <div class="col-sm-9">
+      <table class="table table-striped">
+        <tbody>
+
+        {#list all fields with value#}
+        {#{% for key, val in item %}
+        <tr>
+          <td><b>{{ key }}</b></td>
+          <td>
+            {{ val }}
+          </td>
+        </tr>
+        {% endfor %}#}
+
+        {#list all fields configured by user#}
+        {% for field in fields_list %}
+        <tr>
+          <td><b>{{ field }}</b></td>
+          <td>
+            {% if item_schema[field] and item_schema[field].type == 'array' %}
+              {% for element in item[field] %}
+              <span class="tags-element">{{ element }}</span>
+              {% endfor %}
+            {% else %}
+              {{ item[field] }}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      {% for similar in similar_list %}
+      <h3>Similar by {{ similar }}</h3>
+      {% for element in similars[similar].data.items %}
+        <div class="col-sm-3 col-md-3">
+          <div class="thumbnail show-info" title="Similar properties" data-content="{{ item['functions'] | intersection(element['functions']) }}">
+            {#<a href="/item/{{ element.permalink }}">#}
+              <img src="{{ element.image }}" alt="{{ element.name }}">
+            {#</a>#}
+            <div class="caption">
+              {#<p><a href="/item/{{ element.permalink }}">{{ element.name }}</a></p>#}
+              <p>{{ element.name }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      <div class="clearfix"></div>
+      {% endfor %}
+
+    </div>
+  </div>
+</div>

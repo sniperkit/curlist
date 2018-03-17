@@ -1,0 +1,23 @@
+.modal .modal-dialog { 
+  width: 1000px; 
+}
+
+
+.breadcrumbs {
+}
+
+.breadcrumbs span {
+    margin-right: 5px;
+}
+
+.tags-element {
+  display: block; 
+  float: left; 
+  color: #333; 
+  background-color: #dbebf2; 
+  border-radius: 5px; 
+  padding: 1px 3px 1px 3px; 
+  margin: 0 4px 4px 0;
+  display: block; 
+  float: left; 
+}

@@ -1,0 +1,90 @@
+{% extends "views/layout.html.twig" %}
+
+{% block content %}
+
+{% verbatim %}
+
+<h1>List of items ({{ searchResult.pagination.total }})</h1>
+
+<p class="text-muted">Search performed in {{ searchResult.timings.search }} ms, facets in {{ searchResult.timings.facets }} ms</p>
+
+<div class="row">
+  <div class="col-md-2 col-xs-2">
+    <div v-for="facet in searchResult.data.aggregations">
+      <h5 style="margin-bottom: 5px;"><strong style="color: #337ab7;">{{ facet.title }}</strong></h5>
+
+      <div v-if="searchable_facets.indexOf(facet.name) !== -1" class="input-group" style="margin: 5px 0 5px 0;">
+        <input :id="'aggregation_autocomplete_' + facet.name " type="text" style="height: 25px;" value="" class="form-control aggregation_autocomplete ui-autocomplete-input" placeholder="Search..">
+      </div>
+
+      <ul class="browse-list list-unstyled long-list" style="margin-bottom: 0;">
+        <li v-for="bucket in facet.buckets">
+        <div class="checkbox block" style="margin-top: 0; margin-bottom: 0;">
+          <label>
+            <input class="checkbox" type="checkbox" v-model="filters[facet.name]" v-bind:value="bucket.key">
+            {{ bucket.key }} ({{ bucket.doc_count }})
+          </label>
+        </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-md-10 col-xs-10">
+    <div class="breadcrumbs" style="margin: 0 0 20px 0;">
+      <span v-for="filter of breadcrumbs" class="label label-default">{{ filter.val }}
+        <span href="#" style="cursor: pointer" v-on:click="removeFilter(filter.key, filter.val)" class="glyphicon glyphicon-remove"></span>
+      </span>
+
+      <span v-if="query" class="label label-default" style="">{{ query }}
+        <span v-on:click="removeQuery()" style="cursor: pointer" class="glyphicon glyphicon-remove"></span>
+      </span>
+
+      <span v-if="breadcrumbs.length || query" class="label label-default pull-right" v-on:click="reset()" style="cursor: pointer; margin-right: 0;">Clear filters
+        <span class="glyphicon glyphicon-remove"></span>
+      </span>
+    </div>
+
+    <div class="clearfix"></div>
+    <!--<h3>List of items ({{ searchResult.pagination.total }})</h3>-->
+    <table class="table table-striped table-items">
+      <tbody>
+      <tr v-for="item of searchResult.data.items" v-bind:data-id="item.id">
+        <td><img style="width: 100px;" v-bind:src="item.image"></td>
+        <td></td>
+        <td>
+          <b>{{ item.name }}</b>
+          <br />
+          {{ item.description }}
+        </td>
+        <td></td>
+        <td>
+          <span style="font-size: 12px; display: block; float: left; background-color: #dbebf2; border-radius: 5px; padding: 1px 3px 1px 3px; margin: 2px;" v-for="tag in item.tags">{{ tag }}</span>
+        </td>
+        <td>
+          <a title="show details" href="#" class="action-icon" v-on:click="showItem(item.id);" v-on:click.prevent.self><i class="fa fa-window-maximize" aria-hidden="true"></i></a>
+          <a title="edit information" href="#" class="action-icon" v-on:click="showEditItem(item.id);" v-on:click.prevent.self><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="clearfix"></div>
+
+
+    <div class="clearfix"></div>
+
+    <div class="pagination-bar text-center">
+      <paginate
+      :page-count="Math.ceil(searchResult.pagination.total / searchResult.pagination.per_page)"
+      :click-handler="goToPage"
+      :prev-text="'Prev'"
+      :next-text="'Next'"
+      :container-class="'pagination'">
+      </paginate>
+    </div>
+  </div>
+  <div class="clearfix" style="margin-bottom: 100px;"></div>
+</div>
+{% endverbatim %}
+
+{% endblock %}

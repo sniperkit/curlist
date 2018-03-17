@@ -1,0 +1,65 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title" id="myModalLabel">Edit item: {{ item.id }}</h4>
+</div>
+<div class="modal-body ui-front">
+
+  <form class="item-edit" action="/item/edit/{{ item.id }}">
+
+    <div class="form-group" style="margin-bottom: 0;">
+      {#<button type="submit" class="item-submit btn pull-right btn-default">Submit</button>
+      <a style="margin-right: 10px;" class="item-submit btn pull-right btn-default" onclick="showItem({{ item['id'] }}); return false;">View</a>#}
+    </div>
+
+    <div class="clearfix"></div>
+
+    {% for field in fields_list %}
+    <div class="form-group">
+      <label>{{ field }}</label>
+      {#<input type="text" class="form-control" name="name" placeholder="Name" value="{{ item.name }}">#}
+      {#{{ item_schema[field] | debug }}#}
+      {% if item_schema[field] and item_schema[field].type == 'text' %}
+      <textarea type="text" rows="4" class="form-control" name="description">{{ item[field] }}</textarea>
+      {% elseif item_schema[field] and item_schema[field].type == 'array' %}
+      <input type="text" class="form-control tags-edit" id="tags-edit-{{ field }}" name="{{ field }}" placeholder="{{ field }}" value="{{ item[field] }}">
+      {% else %}
+      <input type="text" class="form-control" name="{{ field }}" placeholder="{{ field }}" value="{{ item[field] }}">
+      {% endif %}
+      {#<input type="text" class="form-control tags-edit" id="tags-edit-tags" name="tags" placeholder="SaaS,B2B" value="{{ item.tags }}">#}
+      {#{% endif %}#}
+    </div>
+    {% endfor %}
+
+
+    {#<div class="form-group">
+      <label>Name</label>
+      <input type="text" class="form-control" name="name" placeholder="Name" value="{{ item.name }}">
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="item-add-description" type="text" rows="4" class="form-control" name="description">{{ item.description }}</textarea>
+    </div>#}
+
+    {#<div class="form-group">
+      <label>URL</label>
+      <input type="text" class="form-control" name="url" placeholder="http://domain.com" value="{{ item.url }}">
+    </div>#}
+
+    {#<div class="form-group">
+      <label>Tags</label>
+      <input type="text" class="form-control tags-edit" id="tags-edit-tags" name="tags" placeholder="SaaS,B2B" value="{{ item.tags }}">
+    </div>
+
+    <div class="form-group">
+      <label>Actors</label>
+      <input type="text" class="form-control tags-edit" id="tags-edit-actors" name="actors" placeholder="SaaS,B2B" value="{{ item.actors }}">
+    </div>#}
+
+    {#<a id="item-delete" onclick="deleteItemConfirm({{ item.id }})" class="btn pull-left btn-default">Delete</a>#}
+    <button id="item-submit" type="submit" class="btn pull-right btn-default">Submit</button>
+
+    <div class="clearfix"></div>
+
+  </form>
+</div>

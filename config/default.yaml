@@ -1,0 +1,105 @@
+#elasticsearch:
+  #host: localhost:9200
+
+# google analytics
+ga: ""
+
+# authentication providers
+auth:
+  google: 
+    clientID: ""
+    clientSecret: ""
+    scope: 
+      - "profile"
+      - "email"
+    callbackURL: "http://localhost:3005/auth/google/callback"
+
+searchable_facets: ['tags', 'actors', 'genres']
+
+# we should define arrays here
+# all others are usually strings
+item_schema:
+  description: 
+    type: text
+  tags: 
+    type: array
+  genres: 
+    type: array
+  actors: 
+    type: array
+  country: 
+    type: array
+
+# early prototype
+#acl:
+  #allowed_emails_editing: ['joe.doe@domain.com']
+  #allowed_export_types: ['json', 'yaml', 'csv']
+  #export_login_required: true
+  #filters_count_before_login: 3
+
+filters_page:
+  # list of shown facets on filters page
+  facets_list: ['tags', 'actors', 'genres']
+
+item_page:
+  fields_list: 
+    - name 
+    - year
+    - rating
+    - votes
+    - description
+    - director
+    - actors
+    - genres
+    - tags
+    - country 
+    - runtime 
+    - reviews_count 
+  # it won't create a similar lists but only prepare data for you in view 
+  # for manual displaying
+  similar_list: ['tags', 'actors']
+
+add_page: 
+  fields_list:
+    - name: name
+      type: string
+    - name: url
+      type: string
+    - name: tags
+      type: array
+    - name: description
+      type: textarea
+
+edit_page: 
+  fields_list: 
+    - name 
+    #- year
+    #- rating
+    #- votes
+    - description
+    #- director
+    #- actors
+    - genres
+    - tags
+    #- country 
+    #- runtime 
+    #- reviews_count 
+
+# customize search behaviour
+search:
+  searchableFields: ['title', 'tags', 'actors']
+  sortings: 
+    name_asc: 
+      field: name
+      order: asc
+  # this is how the filters on the left are generated
+  aggregations: 
+    tags: 
+      title: Tags
+      size: 10
+    actors: 
+      title: Actors
+      size: 10
+    genres: 
+      title: Genres
+      size: 10

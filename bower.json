@@ -1,0 +1,22 @@
+{
+  "name": "curlist-tool",
+  "description": "The experimental tool for creating curated lists",
+  "main": "index.js",
+  "authors": [
+    "Mateusz Rzepa"
+  ],
+  "license": "GPL-3",
+  "homepage": "https://github.com/itemsapi/curlist",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery-tagit": "*",
+    "vue": "^2.5.16",
+    "jquery-1.12.4.min": "https://code.jquery.com/jquery-1.12.4.min.js"
+  }
+}

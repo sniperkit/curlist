@@ -1,0 +1,93 @@
+{% import "views/macros/pagination.html.twig" as pag %}
+
+{% extends "views/layout.html.twig" %}
+
+{% macro technology_box(name, title, elements, options) %}
+
+  {% if options.show_hr %}
+  <hr id="{{ name }}_title" class="clearfix" />
+  {% endif %}
+
+  <h4>{{ title}}</h4>
+  <div class="row">
+    {% set columns = 4 %}
+
+    {% for nb in range(0, columns) %}
+    <div class="col-md-3 col-sm-3">
+      <ul class="list-unstyled list-underlined">
+
+        {% set size = (elements.data.buckets.length / columns) | ceil %}
+        {% set start = (nb) * size %}
+        {% set end = start + size %}
+
+        {% for row in elements.data.buckets.slice(start, end) %}
+        <li>
+        {#<a href='/?filters={"{{ name }}":["{{ row.key }}"]}'>{{ row.key }} ({{ row.doc_count }})</a><br />#}
+        {{ row.key }} ({{ row.doc_count }})<br />
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+
+    {% if 0 and elements.pagination.per_page < elements.pagination.total %}
+    <div class="col-md-12 pagination-bar text-left" style="margin-top: 10px;">
+      {{ pag.pagination_render(elements.pagination, {
+        pages_count: 8,
+        url: '/facets/' + name
+      }) }}
+    </div>
+    {% endif %}
+  </div>
+  <div class="clearfix">
+{% endmacro %}
+
+{% block content %}
+
+<div class="page-header" style="margin-top: 0;">
+  <h2 style="margin-top: 10px;">Filters statistics</h2>
+  <h4 class="text-left text-muted">Showing top filters</h4>
+</div>
+
+{#{% if not name %}
+<h4 style="margin-bottom: 20px;">Jump to: {% for name in list %}<a href="#{{ name }}_title">{{ __('jumpto.' + name) }}</a>, {% endfor %}</h4>
+{% endif %}#}
+
+{% if name %}
+  {{ technology_box(name, name, facet, {
+    show_hr: false
+  }) }}
+{% else %}
+  {% for name in list %}
+  {{ technology_box(name, name, output[name], {
+    show_hr: false
+  }) }}
+  {% endfor %}
+{% endif %}
+
+{#{% if not name %}
+<h4 style="margin-bottom: 20px;">Jump to: {% for name in list %}<a href="#{{ name }}_title">{{ __('jumpto.' + name) }}</a>, {% endfor %}</h4>
+{% endif %}
+
+{% if name %}
+  {{ technology_box(name, __('techbox.' + name), facet, {
+    show_hr: false
+  }) }}
+{% else %}
+  {% for name in list %}
+  {{ technology_box(name, __('techbox.' + name), output[name], {
+    show_hr: true
+  }) }}
+  {% endfor %}
+{% endif %}#}
+
+{#{% for name in list %}
+{{ technology_box(name, name, output[name], {
+  show_hr: true
+}) }}
+{% endfor %}#}
+
+{% endblock %}
+
+{% block before_body_end %}
+{% endblock %}
