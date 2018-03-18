@@ -47,6 +47,7 @@ describe('user service', function() {
     assert.equal(0, await Changelog.count())
     var item = await service.addItem({
       name: 'Spartacus',
+      country: 'USA',
       tags: ['a', 'b']
     })
 
@@ -70,5 +71,17 @@ describe('user service', function() {
     assert.equal(2, await Changelog.count())
     assert.equal('Spartacus II', item.json.name)
     assert.deepEqual(['a', 'b', 'c'], item.json.tags)
+  });
+
+  it('should edit item with empty value', async function test() {
+
+    var item = await service.editItem(1, {
+      country: '',
+      tags: []
+    })
+
+    assert.equal('Spartacus II', item.json.name)
+    assert.equal('', item.json.country)
+    assert.deepEqual([], item.json.tags)
   });
 })

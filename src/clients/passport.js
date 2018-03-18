@@ -3,6 +3,7 @@ const config = require('config');
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var SUCCESS_URL = '/?ref=login';
+const _ = require('lodash');
 
 module.exports = function(app) {
 
@@ -26,22 +27,25 @@ module.exports = function(app) {
     }
   });
 
-  passport.use(new GoogleStrategy({
-    clientID: config.get('auth.google.clientID'),
-    clientSecret: config.get('auth.google.clientSecret'),
-    callbackURL: config.get('auth.google.callbackURL'),
-    profileFields: config.get('auth.google.scope')
-  }, function(accessToken, refreshToken, profile, done) {
-    process.nextTick(function() {
-      userService.updateSocialUser(accessToken, refreshToken, profile, 'google')
-      .then(function(user) {
-        done(null, user)
+
+  if (_.get(config.get('auth'), 'google.clientID')) {
+    passport.use(new GoogleStrategy({
+      clientID: config.get('auth.google.clientID'),
+      clientSecret: config.get('auth.google.clientSecret'),
+      callbackURL: config.get('auth.google.callbackURL'),
+      profileFields: config.get('auth.google.scope')
+    }, function(accessToken, refreshToken, profile, done) {
+      process.nextTick(function() {
+        userService.updateSocialUser(accessToken, refreshToken, profile, 'google')
+          .then(function(user) {
+            done(null, user)
+          })
+          .catch(function(err) {
+            done(err)
+          })
       })
-      .catch(function(err) {
-        done(err)
-      })
-    })
-  }))
+    }))
+  }
 
   var successRedirect = function(req, res) {
 

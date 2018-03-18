@@ -60,8 +60,6 @@ module.exports.processItemForDB = function(body, schema) {
     }
   })
 
-  //body.tags = body.tags.split(',');
-  //body.actors = body.actors.split(',');
   return body;
 }
 
@@ -69,6 +67,13 @@ module.exports.editItem = async function(id, body, user_id) {
 
   var item = await Item.findById(id);
   var json = _.merge(item.json, body);
+
+  _.keys(body).forEach(k => {
+    if (_.isArray(body[k])) {
+      json[k] = body[k];
+    }
+
+  })
 
   await Item.update({
     json: json

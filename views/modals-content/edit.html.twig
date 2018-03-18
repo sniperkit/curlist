@@ -7,15 +7,17 @@
   <form class="item-edit" action="/item/edit/{{ item.id }}">
 
     <div class="form-group" style="margin-bottom: 0;">
-      {#<button type="submit" class="item-submit btn pull-right btn-default">Submit</button>
-      <a style="margin-right: 10px;" class="item-submit btn pull-right btn-default" onclick="showItem({{ item['id'] }}); return false;">View</a>#}
+      <button type="submit" class="item-submit btn pull-right btn-default">Submit</button>
+      <a style="margin-right: 10px;" class="item-submit btn pull-right btn-default" onclick="showItem({{ item['id'] }}); return false;">View</a>
     </div>
+
+    <div class="clearfix"></div>
 
     <div class="clearfix"></div>
 
     {% for field in fields_list %}
     <div class="form-group">
-      <label>{{ field }}</label>
+      <label>{{ __('item.' + field) }}</label>
       {#<input type="text" class="form-control" name="name" placeholder="Name" value="{{ item.name }}">#}
       {#{{ item_schema[field] | debug }}#}
       {% if item_schema[field] and item_schema[field].type == 'text' %}
@@ -30,6 +32,10 @@
     </div>
     {% endfor %}
 
+    <div class="form-group">
+      <label>Changelog comment <span style="color: gray; cursor: pointer;" data-toggle="tooltip" data-placement="right" title="This is optional comment. This comment will be visible in changelog" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></label>
+      <input type="text" class="form-control" name="edit_comment" placeholder="comment..">
+    </div>
 
     {#<div class="form-group">
       <label>Name</label>
@@ -63,3 +69,12 @@
 
   </form>
 </div>
+
+<script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+
+

@@ -5,7 +5,7 @@ const Promise = require('bluebird');
 
 (async function() {
 
-  var data = require('./../data/imdb_full.json');
+  var data = require(process.env.IMPORT_FILE || './../data/imdb_full.json');
 
   // make it with transaction ?!
 

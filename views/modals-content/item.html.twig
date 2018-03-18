@@ -5,9 +5,13 @@
 <div class="modal-body item-view">
   <div class="row" style="margin-bottom: 10px;">
     <div class="col-sm-3">
-      <img src="{{ item.image }}" />
+      <img class="img-responsive" src="{{ item.image }}" />
     </div>
     <div class="col-sm-9">
+
+      <a style="margin-bottom: 10px;" class="item-submit btn btn-default pull-right" onclick="return showEditItem({{ item['id'] }});">Edit</a>
+      <a style="margin-right: 5px;" class="item-submit btn btn-default pull-right" onclick="return showRawData({{ item['id'] }});">Raw data</a>
+
       <table class="table table-striped">
         <tbody>
 
@@ -24,9 +28,9 @@
         {#list all fields configured by user#}
         {% for field in fields_list %}
         <tr>
-          <td><b>{{ field }}</b></td>
+          <td><b>{{ __('item.' + field) }}</b></td>
           <td>
-            {% if item_schema[field] and item_schema[field].type == 'array' %}
+            {% if item[field] and item_schema[field] and item_schema[field].type == 'array' %}
               {% for element in item[field] %}
               <span class="tags-element">{{ element }}</span>
               {% endfor %}
@@ -39,8 +43,12 @@
         </tbody>
       </table>
 
+      <a class="item-submit btn btn-default pull-right" onclick="return showEditItem({{ item['id'] }});">Edit</a>
+
+      <div class="clearfix"></div>
+
       {% for similar in similar_list %}
-      <h3>Similar by {{ similar }}</h3>
+      <h4>Similar by {{ similar }}</h4>
       {% for element in similars[similar].data.items %}
         <div class="col-sm-3 col-md-3">
           <div class="thumbnail show-info" title="Similar properties" data-content="{{ item['functions'] | intersection(element['functions']) }}">

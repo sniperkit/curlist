@@ -1,0 +1,42 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title" id="myModalLabel">Add new item</h4>
+</div>
+<div class="modal-body ui-front">
+
+  <form class="item-edit" action="/item/add">
+
+    <div class="form-group" style="margin-bottom: 0;">
+      <button type="submit" class="item-submit btn pull-right btn-default">Submit</button>
+    </div>
+
+    <div class="clearfix"></div>
+
+    {% for field in fields_list %}
+    <div class="form-group">
+      <label>{{ __('item.' + field) }}</label>
+      {% if item_schema[field] and item_schema[field].type == 'text' %}
+      <textarea type="text" rows="4" class="form-control" name="description">{{ item[field] }}</textarea>
+      {% elseif item_schema[field] and item_schema[field].type == 'array' %}
+      <input type="text" class="form-control tags-edit" id="tags-edit-{{ field }}" name="{{ field }}" placeholder="{{ field }}" value="{{ item[field] }}">
+      {% else %}
+      <input type="text" class="form-control" name="{{ field }}" placeholder="{{ field }}" value="{{ item[field] }}">
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <button id="item-submit" type="submit" class="btn pull-right btn-default">Submit</button>
+
+    <div class="clearfix"></div>
+
+  </form>
+</div>
+
+<script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+
+

@@ -4,7 +4,14 @@
 
 {% verbatim %}
 
-<h1>List of items ({{ searchResult.pagination.total }})</h1>
+<div class="page-header" style="margin-top: 15px; margin-bottom: 10px;">
+  <div class="btn-toolbar pull-right">
+    <div class="btn-group">
+      <a href="/" type="button" class="btn btn-primary" onclick="return showAddItem();"><i class="fa fa-plus" aria-hidden="true"></i> Add item</a>
+    </div>
+  </div>
+  <h2 style="margin-top: 0;">List of items ({{ searchResult.pagination.total }})</h2>
+</div>
 
 <p class="text-muted">Search performed in {{ searchResult.timings.search }} ms, facets in {{ searchResult.timings.facets }} ms</p>
 
@@ -57,9 +64,11 @@
           <br />
           {{ item.description }}
         </td>
-        <td></td>
         <td>
-          <span style="font-size: 12px; display: block; float: left; background-color: #dbebf2; border-radius: 5px; padding: 1px 3px 1px 3px; margin: 2px;" v-for="tag in item.tags">{{ tag }}</span>
+          <span class="tags-element" v-for="tag in item.usage">{{ tag }}</span>
+        </td>
+        <td>
+          <span class="tags-element" v-for="tag in item.tags">{{ tag }}</span>
         </td>
         <td>
           <a title="show details" href="#" class="action-icon" v-on:click="showItem(item.id);" v-on:click.prevent.self><i class="fa fa-window-maximize" aria-hidden="true"></i></a>

@@ -168,7 +168,7 @@ $('#generalModal').on('show.bs.modal', function () {
 
 
 $( document ).ready(function() {
-  var array = ['tags', 'actors', 'genres']
+  var array = searchable_facets;
 
   array.forEach(function(v) {
 
@@ -283,6 +283,38 @@ var showItem = function (id) {
 
   $.ajax({
     url: '/item/' + id,
+    method: 'GET',
+    success: function(data) {
+      $('#modalContent').html(data);
+      $('#generalModal').modal({})
+    }
+  });
+
+  return false;
+}
+
+var showRawData = function (id) {
+
+  if (id === undefined) {
+    return false;
+  }
+
+  $.ajax({
+    url: '/item/raw/' + id,
+    method: 'GET',
+    success: function(data) {
+      $('#modalContent').html(data);
+      $('#generalModal').modal({})
+    }
+  });
+
+  return false;
+}
+
+var showAddItem = function () {
+
+  $.ajax({
+    url: '/item/add',
     method: 'GET',
     success: function(data) {
       $('#modalContent').html(data);

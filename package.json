@@ -45,6 +45,7 @@
     "sqlite3": "^3.1.13",
     "urijs": "^1.19.1",
     "vuejs-paginate": "^1.6.0",
+    "website-to-json": "^1.0.22",
     "winston": "^2.4.0"
   },
   "devDependencies": {
