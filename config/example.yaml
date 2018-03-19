@@ -1,3 +1,10 @@
+db: 
+  dialect: sqlite
+  storage: './sqlite/database_example.sqlite'
+  database: database_example
+  logging: false
+
+
 searchable_facets: ['tags', 'actors', 'genres']
 
 # we should define arrays here

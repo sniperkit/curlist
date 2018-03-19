@@ -63,16 +63,43 @@ module.exports.processItemForDB = function(body, schema) {
   return body;
 }
 
+module.exports.deleteItem = async function(id) {
+  var item = await Item.destroy({
+    where: {
+      [Op.and]: {
+        id: id
+      }
+    }
+  });
+}
+
 module.exports.editItem = async function(id, body, user_id) {
 
   var item = await Item.findById(id);
+
+  // check if there are some changes
+  // if not then return
+  var changes = false;
+
+  _.keys(body).forEach(k => {
+
+    // should be in normalizer also
+    if ((item.json[k] || body[k]) && !_.isEqual(item.json[k], body[k])) {
+    //if (!_.isEqual(item.json[k], body[k])) {
+      changes = true;
+    }
+  })
+
+  if (!changes) {
+    return item;
+  }
+
   var json = _.merge(item.json, body);
 
   _.keys(body).forEach(k => {
     if (_.isArray(body[k])) {
       json[k] = body[k];
     }
-
   })
 
   await Item.update({
@@ -111,3 +138,20 @@ module.exports.editItem = async function(id, body, user_id) {
   return item;
 }
 
+module.exports.allItems = async function() {
+
+  var items = await Item.findAll({
+    //raw: true
+    order: [
+      ['id', 'DESC']
+    ]
+  });
+
+  var data = _.map(items, v => {
+    return Object.assign({
+      id: v.id
+    }, v.json);
+  });
+
+  return data;
+}

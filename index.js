@@ -68,6 +68,7 @@ app.all('*', function(req, res, next) {
 
   req.user_id = req.user ? req.user.id : undefined;
   res.locals.item_schema = config.get('item_schema');
+  res.locals.user = req.user;
   res.locals.searchable_facets = config.get('searchable_facets');
   res.locals.item_display_field = config.get('item_display_field');
 
@@ -133,6 +134,17 @@ app.post(['/item/add'], async function(req, res) {
   var newItem = await service.addItem(body, req.user_id);
 
   return res.json({});
+})
+
+/**
+ * check acl here
+ */
+app.post(['/item/delete/:id'], async function(req, res) {
+
+  var item = await service.deleteItem(req.params.id);
+
+  return res.json({
+  });
 })
 
 app.get(['/item/edit/:id'], async function(req, res) {
@@ -232,20 +244,24 @@ app.get(['/search'], async function(req, res) {
   return res.json(result)
 })
 
+app.get(['/export'], async function(req, res) {
+
+  var data = await service.allItems();
+
+  var filename = 'export.json';
+  res.attachment(filename);
+  return res.status(200).send(data);
+})
+
+app.get(['/profile'], function(req, res) {
+
+  return res.render('views/users/profile', {
+  });
+})
+
 app.get(['/data'], async function(req, res) {
 
-  var items = await Item.findAll({
-    //raw: true
-    order: [
-      ['id', 'DESC']
-    ]
-  });
-
-  var data = _.map(items, v => {
-    return Object.assign({
-      id: v.id
-    }, v.json);
-  });
+  var data = await service.allItems();
 
   return res.json({
     data: data

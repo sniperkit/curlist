@@ -64,6 +64,9 @@ var vm = new Vue({
     },
     showItem: function (id) {
       return showItem(id);
+    },
+    deleteItem: function (id) {
+      return deleteItem(id);
     }
   },
   watch: {
@@ -273,6 +276,30 @@ $('body').keydown(function(e) {
   }
 });
 
+var deleteItem = function (id) {
+
+  if (id === undefined) {
+    return false;
+  }
+
+  currentItemId = id;
+
+  $.ajax({
+    url: '/item/delete/' + id,
+    method: 'POST',
+    success: function(data) {
+
+      $(".table-items tr[data-id='" + id + "']").css('background-color', '#ffe6e6');
+      console.log('deleted item');
+    },
+    error: function(data) {
+      alert('Cannot delete item');
+    }
+  });
+
+  return false;
+}
+
 var showItem = function (id) {
 
   if (id === undefined) {
@@ -348,3 +375,12 @@ var navigateItem = function(where) {
     showItem(nextId)
   }
 }
+
+$.ajaxSetup({
+  beforeSend:function() {
+    $('.ajax-loader').show();
+  },
+  complete:function() {
+    $('.ajax-loader').hide();
+  }
+});

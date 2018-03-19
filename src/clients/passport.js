@@ -71,7 +71,7 @@ module.exports = function(app) {
 
   app.get('/login', function(req, res) {
     res.locals.user  = req.user
-    return res.render('views/login');
+    return res.render('views/users/login');
   });
 
   app.post('/login', passport.authenticate('local', {

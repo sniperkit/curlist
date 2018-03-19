@@ -64,6 +64,7 @@ describe('user service', function() {
     assert.equal(1, await Changelog.count())
     var item = await service.editItem(1, {
       name: 'Spartacus II',
+      empty: null,
       tags: ['a', 'b', 'c']
     })
 
@@ -71,6 +72,18 @@ describe('user service', function() {
     assert.equal(2, await Changelog.count())
     assert.equal('Spartacus II', item.json.name)
     assert.deepEqual(['a', 'b', 'c'], item.json.tags)
+  });
+
+  it('should do anything if new and old values are the same', async function test() {
+
+    var item = await service.editItem(1, {
+      name: 'Spartacus II',
+      empty: '',
+      tags: ['a', 'b', 'c']
+    })
+
+    assert.equal(1, await Item.count())
+    assert.equal(2, await Changelog.count())
   });
 
   it('should edit item with empty value', async function test() {
@@ -83,5 +96,15 @@ describe('user service', function() {
     assert.equal('Spartacus II', item.json.name)
     assert.equal('', item.json.country)
     assert.deepEqual([], item.json.tags)
+    assert.equal(1, await Item.count())
+    assert.equal(3, await Changelog.count())
+  });
+
+  it('should delete item', async function test() {
+
+    var item = await service.deleteItem(1)
+
+    assert.equal(0, await Item.count())
+    assert.equal(3, await Changelog.count())
   });
 })

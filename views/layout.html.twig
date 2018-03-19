@@ -36,10 +36,13 @@
       <div class="navbar-header">
         {#<a class="navbar-brand" href="#" v-on:click="reset()">Curlist tool</a>#}
         <a class="navbar-brand" href="/">Curlist tool</a>
-      </div>
-      <div id="navbar">
+
+        <div class="pull-right ajax-loader" style="display: none; margin-top: 12px; margin-left: 10px;">
+          <img src="/assets/images/ajax-loader.gif" />
+        </div>
+
         {% if is_search_box == true %}
-        <form class="navbar-form navbar-left">
+        <form class="navbar-form navbar-left" style="margin-left: 80px;">
           <div class="form-group">
             {% verbatim %}
             <input type="text" v-model="query" class="form-control" placeholder="Search">
@@ -47,6 +50,22 @@
           </div>
         </form>
         {% endif %}
+
+      </div>
+
+
+
+
+
+
+
+
+
+      <div id="navbar">
+
+
+
+
       </div><!--/.nav-collapse -->
 
 
@@ -55,6 +74,20 @@
           {#<li><a href="/import">Import data</a></li>#}
           <li><a href="/facets">Filters</a></li>
           <li><a href="/changelog">Changelog</a></li>
+          {% if user %}
+          <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user.id }} <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+          </li>
+          {% else %}
+          <li>
+          <a href="/login">
+            <span style="">Login</span>
+          </a>
+          </li>
+          {% endif %}
         </ul>
       </div>
     </div>

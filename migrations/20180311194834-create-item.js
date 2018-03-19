@@ -8,11 +8,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      test: {
-        type: Sequelize.STRING
-      },
       json: {
         type: Sequelize.JSON
+      },
+      deletedAt: {
+        allowNull: true,
+        //defaultValue: Sequelize.NOW,
+        type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,
