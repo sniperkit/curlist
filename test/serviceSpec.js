@@ -4,6 +4,7 @@ var assert = require('assert');
 var service = require('./../src/services/service');
 const Item = require('./../src/models/item');
 const Changelog = require('./../src/models/changelog');
+const User = require('./../src/models/user');
 const _ = require('lodash');
 const sequelize = require('./../src/clients/sequelize');
 
@@ -22,14 +23,27 @@ describe('user service', function() {
       force: true,
       alter: true
     });
+
+    var user = await User.create({
+      email: 'joe.doe@mailinator.com'
+    })
   })
 
   it('should process item for db', async function test() {
     var item = service.processItemForDB({
       tags: 'a,b,c,d,d,d',
+      tags2: '',
+      tags3: null,
+      tags4: undefined,
       genres: ''
     }, {
       tags: {
+        type: 'array'
+      }, tags2: {
+        type: 'array'
+      }, tags3: {
+        type: 'array'
+      }, tags4: {
         type: 'array'
       }, genres: {
         type: 'array'
@@ -39,6 +53,8 @@ describe('user service', function() {
     })
 
     assert.deepEqual(['a', 'b', 'c', 'd'], item.tags)
+    assert.deepEqual([], item.tags2)
+    assert.deepEqual([], item.tags3)
     assert.deepEqual([], item.genres)
   })
 
@@ -49,13 +65,21 @@ describe('user service', function() {
       name: 'Spartacus',
       country: 'USA',
       tags: ['a', 'b']
-    })
+    }, 1)
 
     assert.equal(1, await Item.count())
     assert.equal(1, await Changelog.count())
     assert.equal(1, item.id)
     assert.equal('Spartacus', item.json.name)
     assert.deepEqual(['a', 'b'], item.json.tags)
+    assert.equal(1, item.added_by_user_id)
+
+    var user = await item.getAddedByUser()
+    assert.equal(1, user.id);
+    var user = await item.getEditedByUser()
+    assert.equal(null, user);
+    //console.log(await item.getUser());
+    console.log();
   })
 
   it('should edit item', async function test() {
@@ -64,21 +88,25 @@ describe('user service', function() {
     assert.equal(1, await Changelog.count())
     var item = await service.editItem(1, {
       name: 'Spartacus II',
-      empty: null,
+      empty1: null,
+      empty2: null,
       tags: ['a', 'b', 'c']
-    })
+    }, 1)
 
     assert.equal(1, await Item.count())
     assert.equal(2, await Changelog.count())
     assert.equal('Spartacus II', item.json.name)
     assert.deepEqual(['a', 'b', 'c'], item.json.tags)
+    var user = await item.getEditedByUser()
+    assert.equal(1, user.id);
   });
 
   it('should do anything if new and old values are the same', async function test() {
 
     var item = await service.editItem(1, {
       name: 'Spartacus II',
-      empty: '',
+      empty1: [],
+      empty2: '',
       tags: ['a', 'b', 'c']
     })
 

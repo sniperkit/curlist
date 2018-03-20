@@ -64,11 +64,28 @@ app.use(session({
 
 require('./src/clients/passport')(app)
 
+
+function isAdmin(req, res, next) {
+
+  var is_ajax = req.xhr || req.headers.accept.indexOf('json') > -1;
+
+  if (!req.user || !req.user.is_admin) {
+    if (is_ajax) {
+      return res.status(401).json({
+      });
+    }
+    return res.redirect('/login');
+  }
+
+  next();
+}
+
 app.all('*', function(req, res, next) {
 
   req.user_id = req.user ? req.user.id : undefined;
   res.locals.item_schema = config.get('item_schema');
   res.locals.user = req.user;
+  res.locals.user_display_field = config.get('user_display_field');
   res.locals.searchable_facets = config.get('searchable_facets');
   res.locals.item_display_field = config.get('item_display_field');
 
@@ -139,7 +156,7 @@ app.post(['/item/add'], async function(req, res) {
 /**
  * check acl here
  */
-app.post(['/item/delete/:id'], async function(req, res) {
+app.post(['/item/delete/:id'], isAdmin, async function(req, res) {
 
   var item = await service.deleteItem(req.params.id);
 
@@ -214,6 +231,7 @@ app.get(['/item/:id'], async function(req, res) {
       similars[k] = client.similar(req.params.id, {
         field: k,
         per_page: 4,
+        minimum: 1,
         page: 1
       })
     }

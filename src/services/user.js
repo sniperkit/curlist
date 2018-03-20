@@ -38,6 +38,11 @@ exports.updateSocialUser = async function(accessToken, refreshToken, profile, so
     user = User.build({});
   }
 
+  var count = await User.count();
+  if (!count) {
+    user.is_admin = true;
+  }
+
   var picture
   if (_.isArray(profile.photos) && profile.photos.length > 0) {
     picture = profile.photos[0].value
@@ -53,10 +58,21 @@ exports.updateSocialUser = async function(accessToken, refreshToken, profile, so
 
   user.name = profile.displayName;
 
+  if (!user.username) {
+    user.username = profile.displayName;
+  }
+
   // different values depends on login type
   if (social === 'google') {
 
     user.google = profile._json || {};
+
+    if (!user.first_name) {
+      user.first_name = _.get(profile, 'name.givenName');
+    }
+    if (!user.last_name) {
+      user.last_name = _.get(profile, 'name.familyName');
+    }
   } else if (social === 'facebook') {
 
     user.facebook = profile._json || {};

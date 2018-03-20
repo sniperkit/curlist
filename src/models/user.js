@@ -8,6 +8,12 @@ module.exports = sequelize.define('User', {
   email: {
     type: Sequelize.STRING
   },
+  name: {
+    type: Sequelize.STRING
+  },
+  username: {
+    type: Sequelize.STRING
+  },
   first_name: {
     type: Sequelize.STRING
   },
@@ -18,7 +24,8 @@ module.exports = sequelize.define('User', {
     type: Sequelize.BOOLEAN
   },
   is_admin: {
-    type: Sequelize.BOOLEAN
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
   },
   google: {
     type: Sequelize.JSON

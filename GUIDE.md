@@ -13,12 +13,15 @@ npm install
 #### Configure database in config file
 
 Application works with SQLite + ItemsJS by default.
+
 The system is using Sequelize ORM system so instead of SQLite it can also use PostgreSQL
+
 Look into `./config/example.yaml` to see how SQLite database is configured
 
 #### Run migrations
 
 It's necessary to create a tables structure of your database.
+
 If you use PSQL you need to create a database first
 
 ```bash
@@ -33,6 +36,7 @@ NODE_ENV=example node_modules/.bin/sequelize db:migrate
 #### Configure website
 
 The website is mostly configured by yaml config file.
+
 In `./config/example.yaml` there is example configuration.
 
 You can configure specific things:
@@ -50,3 +54,13 @@ You can configure specific things:
 # it will run app with example config
 NODE_ENV=example npm start
 ```
+
+## List of configuration options
+
+- `item_schema` - stores information about fields. Each fields can be array, text or string by default.
+- `filters_page.facets_list` 
+- `item_page.fields_list`
+- `item_page.similar_list`
+- rest options will be documented soon
+
+For example look into `./config/example.yaml`

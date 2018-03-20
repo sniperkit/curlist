@@ -16,7 +16,7 @@ module.exports.addItem = async function(body, user_id) {
 
   var item = await Item.create({
     json: body,
-    user_id: user_id,
+    added_by_user_id: user_id
   })
 
   // should add item to changelog automatically
@@ -57,6 +57,8 @@ module.exports.processItemForDB = function(body, schema) {
         })
         .uniq()
         .value();
+    } else if (schema[k].type === 'array' && !body[k]) {
+      body[k] = [];
     }
   })
 
@@ -83,9 +85,15 @@ module.exports.editItem = async function(id, body, user_id) {
 
   _.keys(body).forEach(k => {
 
-    // should be in normalizer also
-    if ((item.json[k] || body[k]) && !_.isEqual(item.json[k], body[k])) {
-    //if (!_.isEqual(item.json[k], body[k])) {
+    //!item.json[k] && _.isArray(body[k]) && !body[k].length => no changes
+    //!item.json[k] && !body[k] => no changes
+
+    if (
+      (!item.json[k] && !body[k]) ||
+      (!item.json[k] && _.isArray(body[k]) && !body[k].length)
+    ) {
+      // no changes
+    } else if (!_.isEqual(item.json[k], body[k])) {
       changes = true;
     }
   })
@@ -103,7 +111,8 @@ module.exports.editItem = async function(id, body, user_id) {
   })
 
   await Item.update({
-    json: json
+    json: json,
+    edited_by_user_id: user_id
   }, {
     where: {
       [Op.and]: {

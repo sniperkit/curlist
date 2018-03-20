@@ -11,6 +11,14 @@ module.exports = {
       json: {
         type: Sequelize.JSON
       },
+      edited_by_user_id: {
+        allowNull: true,
+        type: Sequelize.INTEGER
+      },
+      added_by_user_id: {
+        allowNull: true,
+        type: Sequelize.INTEGER
+      },
       deletedAt: {
         allowNull: true,
         //defaultValue: Sequelize.NOW,

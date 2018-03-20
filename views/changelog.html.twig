@@ -32,7 +32,8 @@
     </td>
     <td>
       {% if row.User %}
-      user {{ row.User.id }}
+      {#{{ row.User | debug }}#}
+      {{ row.User[user_display_field] }}
       {% endif %}
     </td>
     <td>
@@ -42,6 +43,8 @@
       {% set val2 = row.json[key] | join(',') %}
 
       {% if row.old_json and val1 != val2 | join(',') %}
+      {#{{ row.old_json | debug }}<br />
+      {{ row.json | debug }}<br />#}
       {#{{ key }}<br />
       {{ val1 }} <> {{ val2 }}<br />
       {{ row.old_json | debug }}<br />#}

@@ -51,23 +51,23 @@
       <h4>Similar by {{ similar }}</h4>
       {% for element in similars[similar].data.items %}
         <div class="col-sm-3 col-md-3">
-          <div class="thumbnail show-info" title="Similar properties" data-content="{{ item['functions'] | intersection(element['functions']) }}">
-            {#<a href="/item/{{ element.permalink }}">#}
-              <img src="{{ element.image }}" alt="{{ element.name }}">
-            {#</a>#}
+          {#<div class="thumbnail" title="Similar properties" data-content="{{ item['functions'] | intersection(element['functions']) }}">#}
+          <div class="thumbnail" title="Similar properties">
+            <img src="{{ element.image }}" alt="{{ element.name }}" />
+            {#<a href="#" onclick="return showItem({{ item.id }})">
+              <img src="{{ element.image }}" alt="{{ element.name }}" />
+            </a>#}
             <div class="caption">
               {#<p><a href="/item/{{ element.permalink }}">{{ element.name }}</a></p>#}
-              <p>{{ element.name }}</p>
+              {#<p>{{ element.name }}</p>#}
+              {#<p class="show-info" {% if item['usage'] %}data-content="{{ item['usage'] | intersection(element['usage']) }}"{% endif %}>{{ element.name }}</p>#}
+              <p class="show-info" {% if item[similar] %}data-content="{{ item[similar] | intersection(element[similar]) }}"{% endif %}>{{ element.name }}</p>
             </div>
           </div>
         </div>
       {% endfor %}
       <div class="clearfix"></div>
       {% endfor %}
-
-
-
-
 
     </div>
 
@@ -78,3 +78,11 @@
 
   </div>
 </div>
+
+<script>
+  $('.show-info').popover({
+    delay: 600,
+    placement: 'bottom',
+    trigger: 'hover'
+  })
+</script>

@@ -1,8 +1,15 @@
 const Sequelize = require('sequelize');
 const sequelize = require('./../clients/sequelize');
+const User = require('./user');
 
-module.exports = sequelize.define('Item', {
+const Item = sequelize.define('Item', {
   json: Sequelize.JSON,
+  added_by_user_id: {
+    type: Sequelize.INTEGER
+  },
+  edited_by_user_id: {
+    type: Sequelize.INTEGER
+  },
   createdAt: Sequelize.DATE,
   updatedAt: Sequelize.DATE,
   deletedAt: Sequelize.DATE
@@ -19,3 +26,13 @@ module.exports = sequelize.define('Item', {
     }
   }
 });
+
+Item.belongsTo(User, {
+  foreignKey: 'added_by_user_id', targetKey: 'id', as: 'addedByUser'
+});
+
+Item.belongsTo(User, {
+  foreignKey: 'edited_by_user_id', targetKey: 'id', as: 'editedByUser'
+});
+
+module.exports = Item;
