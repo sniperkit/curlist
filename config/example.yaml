@@ -52,29 +52,14 @@ item_page:
 
 add_page: 
   fields_list:
-    - name: name
-      type: string
-    - name: url
-      type: string
-    - name: tags
-      type: array
-    - name: description
-      type: textarea
+    - url
 
 edit_page: 
   fields_list: 
     - name 
-    #- year
-    #- rating
-    #- votes
     - description
-    #- director
-    #- actors
     - genres
     - tags
-    #- country 
-    #- runtime 
-    #- reviews_count 
 
 # customize search behaviour
 search:

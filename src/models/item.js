@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const sequelize = require('./../clients/sequelize');
 const User = require('./user');
+const _ = require('lodash');
 
 const Item = sequelize.define('Item', {
   json: Sequelize.JSON,
@@ -26,6 +27,12 @@ const Item = sequelize.define('Item', {
     }
   }
 });
+
+Item.prototype.getItem = function() {
+  return _.merge(this.json, {
+    id: this.id
+  })
+}
 
 Item.belongsTo(User, {
   foreignKey: 'added_by_user_id', targetKey: 'id', as: 'addedByUser'

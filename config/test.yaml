@@ -3,3 +3,5 @@ db:
   storage: './sqlite/database_test.sqlite'
   database: database_test
   logging: false
+
+functions_path: ~

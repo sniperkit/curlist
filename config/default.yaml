@@ -11,6 +11,12 @@ auth:
 # go into ./locales/ to make translations
 locales: ['en']
 
+functions_path: './../../config/functions'
+listeners_path: ~
+
+# itemsjs or elasticsearch (not supported yet)
+search_engine: 'itemsjs'
+
 # early prototype
 #acl:
   #allowed_emails_editing: ['joe.doe@domain.com']
@@ -18,7 +24,10 @@ locales: ['en']
   #export_login_required: true
   #filters_count_before_login: 3
 
+per_page_list: [10, 20, 30, 50]
+
 item_display_field: 'id'
+user_display_field: 'id'
 
 # for example look into example.yaml
 searchable_facets: []
@@ -38,4 +47,16 @@ add_page:
 edit_page: 
   fields_list: []
 
-search: ~
+default_sort: id_desc
+
+# customize search behaviour
+search:
+  sortings: 
+    id_asc: 
+      field: id
+      title: ID asc
+      order: asc
+    id_desc: 
+      field: id
+      title: ID desc
+      order: desc

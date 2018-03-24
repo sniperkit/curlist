@@ -8,7 +8,14 @@ exports.build = function(str, data) {
   return url.search();
 }
 
+/**
+ * should be normalize domain
+ */
 exports.normalizeUrl = function(url) {
+
+  if (!url) {
+    return '';
+  }
 
   if (!url.match('http')) {
     url = 'http://' + url;

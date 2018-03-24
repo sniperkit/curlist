@@ -39,6 +39,22 @@
   </div>
 
   <div class="col-md-10 col-xs-10">
+
+    <div class="pull-right" style="margin-bottom: 10px;">
+      <select id="select_per_page" v-model="per_page" class="form-control pull-left" style="width: auto; margin-top: 0px;">
+        <option value="">Items per page</option>
+        <option v-for="v in per_page_list">{{ v }}</option>
+      </select>
+
+      <select id="select_sorting" v-model="sort" class="form-control pull-left" style="width: auto; margin-top: 0px; margin-left: 10px;">
+        <option value="">Sort name</option>
+        <option v-for="v in sortings" v-bind:value="v.name">{{ v.title }}</option>
+      </select>
+    </div>
+
+    <div class="clearfix"></div>
+
+
     <div class="breadcrumbs" style="margin: 0 0 20px 0;">
       <span v-for="filter of breadcrumbs" class="label label-default">{{ filter.val }}
         <span href="#" style="cursor: pointer" v-on:click="removeFilter(filter.key, filter.val)" class="glyphicon glyphicon-remove"></span>
@@ -80,7 +96,6 @@
       </tbody>
     </table>
     <div class="clearfix"></div>
-
 
     <div class="clearfix"></div>
 

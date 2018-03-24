@@ -58,3 +58,14 @@ typings/
 .env
 
 sqlite/
+
+config/production\.yaml
+
+sequelize\.js
+
+src/listeners/index\.js
+
+test/fixtures/google\.json
+
+config/development\.yaml
+data/*

@@ -21,7 +21,7 @@
       {#<input type="text" class="form-control" name="name" placeholder="Name" value="{{ item.name }}">#}
       {#{{ item_schema[field] | debug }}#}
       {% if item_schema[field] and item_schema[field].type == 'text' %}
-      <textarea type="text" rows="4" class="form-control" name="description">{{ item[field] }}</textarea>
+      <textarea type="text" rows="4" class="form-control" name="{{ field }}">{{ item[field] }}</textarea>
       {% elseif item_schema[field] and item_schema[field].type == 'array' %}
       <input type="text" class="form-control tags-edit" id="tags-edit-{{ field }}" name="{{ field }}" placeholder="{{ field }}" value="{{ item[field] }}">
       {% else %}

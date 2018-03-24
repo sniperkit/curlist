@@ -6,26 +6,31 @@ Promise.config({
 })
 
 const _ = require('lodash');
+const config = require('config');
 const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const logger = require('./src/clients/logger');
 const itemsjs = require('itemsjs');
+
 const service = require('./src/services/service');
-const config = require('config');
 
 const Item = require('./src/models/item');
 const User = require('./src/models/user');
 const Changelog = require('./src/models/changelog');
+const listeners = config.get('listeners_path') ? require(config.get('listeners_path')) : {};
+const emitter = require('./src/clients/emitter');
 
 const i18n = require('./src/clients/i18n');
 app.use(i18n.init);
 
 var client;
 
-require('./src/clients/itemsjs')(result => {
-  client = result;
-  console.log('loaded itemsjs');
-});
+(async function() {
+  //client = await require('./src/clients/itemsjs').getClient();
+  client = await require('./src/clients/search').getClient();
+  console.log('itemsjs loaded');
+  console.log('search engine loaded');
+})();
 
 const nunenv = require('./src/clients/nunenv')(app, './', {
   autoescape: true,
@@ -89,8 +94,17 @@ app.all('*', function(req, res, next) {
   res.locals.searchable_facets = config.get('searchable_facets');
   res.locals.item_display_field = config.get('item_display_field');
 
+  res.locals.sortings = _.map(config.get('search.sortings'), (v, k) => {
+    return {
+      title: v.title,
+      name: k
+    };
+  })
+
+  res.locals.per_page_list = config.get('per_page_list');
 
   res.locals.configuration = config.get('search');
+  res.locals.default_sort = config.get('default_sort');
 
   console.log('user_id');
   console.log(req.user_id);
@@ -104,13 +118,15 @@ app.get(['/'], function(req, res) {
   });
 })
 
-app.get(['/facet/:name'], function(req, res) {
+app.get(['/facet/:name'], async function(req, res) {
 
-  var result = client.aggregation({
+  var result = await client.aggregation({
     name: req.params.name,
     query: req.query.query,
     per_page: 10
   })
+
+  console.log(JSON.stringify(result, null, 2));
 
   return res.json(_.map(result.data.buckets, function(val) {
     return {
@@ -150,6 +166,12 @@ app.post(['/item/add'], async function(req, res) {
   var body = service.processItemForDB(req.body, config.get('item_schema'));
   var newItem = await service.addItem(body, req.user_id);
 
+  await emitter.emitAsync('item.added', newItem, req.user_id);
+
+  // reindex data
+  var data = await service.allItems();
+  client.reindex(data);
+
   return res.json({});
 })
 
@@ -159,6 +181,9 @@ app.post(['/item/add'], async function(req, res) {
 app.post(['/item/delete/:id'], isAdmin, async function(req, res) {
 
   var item = await service.deleteItem(req.params.id);
+
+  var data = await service.allItems();
+  client.reindex(data);
 
   return res.json({
   });
@@ -178,8 +203,17 @@ app.get(['/item/edit/:id'], async function(req, res) {
 
 app.post(['/item/edit/:id'], async function(req, res) {
 
-  var body = service.processItemForDB(req.body, config.get('item_schema'));
-  var newItem = await service.editItem(req.params.id, body, req.user_id);
+  var json = service.processItemForDB(req.body, config.get('item_schema'));
+  var newItem = await service.editItem(req.params.id, json, req.user_id);
+
+  var result = await emitter.emitAsync('item.edited', newItem);
+  console.log('result');
+  console.log(result);
+
+  // reindex data
+  //client = await require('./src/clients/itemsjs').getClient();
+  var data = await service.allItems();
+  client.reindex(data);
 
   return res.json({});
 })
@@ -190,9 +224,11 @@ app.get(['/facets'], async function(req, res) {
   var list = _.keys(config.get('search.aggregations'));
   var per_page = 100;
 
-  await Promise.all(list).map(v => {
-    var r = client.aggregation({
+  await Promise.all(list).map(async v => {
+    var r = await client.aggregation({
       name: v,
+      sort: '_count',
+      order: 'desc',
       per_page: per_page
     })
 
@@ -210,10 +246,13 @@ app.get(['/item/raw/:id'], async function(req, res) {
   var item = await Item.findById(req.params.id);
 
   return res.render('views/modals-content/raw', {
+    item: item
+  });
+  /*return res.render('views/modals-content/raw', {
     item: _.merge(item.json, {
       id: item.id
     })
-  });
+  });*/
 })
 
 app.get(['/item/:id'], async function(req, res) {
@@ -240,7 +279,7 @@ app.get(['/item/:id'], async function(req, res) {
   //console.log(similars);
 
   return res.render('views/modals-content/item', {
-    item: _.merge(item.json, {
+    item: _.merge(service.processItemForDisplay(item.json), {
       id: item.id
     }),
     fields_list: config.get('item_page.fields_list'),
@@ -255,10 +294,16 @@ app.get(['/item/:id'], async function(req, res) {
  */
 app.get(['/search'], async function(req, res) {
 
-  var result = client.search({
-    per_page: 10
-  })
+  var queries = req.query;
+  console.log(queries);
 
+  queries.page = queries.page || 1;
+  queries.per_page = queries.per_page || 30;
+  queries.sort = req.query.sort || 'id_desc';
+
+  var result = await client.search(queries)
+  //var result = await elasticitems.search(queries);
+  //result.timings = {};
   return res.json(result)
 })
 
