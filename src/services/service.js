@@ -2,7 +2,9 @@ const Item = require('./../models/item');
 const Changelog = require('./../models/changelog');
 const _ = require('lodash');
 const Sequelize = require('sequelize');
+const config = require('config');
 const Op = Sequelize.Op
+const functions = config.get('functions_path') ? require(config.get('functions_path')) : {};
 
 module.exports.findById  = async function(id) {
   var item = await Item.findById(id);
@@ -35,7 +37,23 @@ module.exports.addItem = async function(body, user_id) {
  * this function content probably should be defined in simplier place
  * as it will be configured per application
  */
-module.exports.processItemForSearch = async function(json) {
+module.exports.processItemForSearch = function(json) {
+  // the file should be configured in configuration
+  // and be changeable for each environment
+  //return require('./config/functions').processItemForSearch(json);
+  if (functions.processItemForSearch) {
+    json = functions.processItemForSearch(json);
+  }
+
+  return json
+}
+
+module.exports.processItemForDisplay = function(json) {
+  if (functions.processItemForDisplay) {
+    json = functions.processItemForDisplay(json);
+  }
+
+  return json
 }
 
 /**
@@ -57,10 +75,14 @@ module.exports.processItemForDB = function(body, schema) {
         })
         .uniq()
         .value();
-    } else if (schema[k].type === 'array' && !body[k]) {
+    } else if (schema[k].type === 'array' && !body[k] && body[k] !== undefined) {
       body[k] = [];
     }
   })
+
+  /*if (functions.processItemForDB) {
+    body = functions.processItemForDB(body);
+  }*/
 
   return body;
 }
@@ -87,6 +109,12 @@ module.exports.editItem = async function(id, body, user_id) {
 
     //!item.json[k] && _.isArray(body[k]) && !body[k].length => no changes
     //!item.json[k] && !body[k] => no changes
+
+    // ignore undefined values
+    if (body[k] === undefined) {
+      // it works like "continue" here
+      return;
+    }
 
     if (
       (!item.json[k] && !body[k]) ||
@@ -157,9 +185,10 @@ module.exports.allItems = async function() {
   });
 
   var data = _.map(items, v => {
-    return Object.assign({
+    return module.exports.processItemForSearch(v.getItem());
+    /*return Object.assign({
       id: v.id
-    }, v.json);
+    }, module.exports.processItemForSearch(v.getItem()));*/
   });
 
   return data;

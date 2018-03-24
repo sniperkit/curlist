@@ -55,6 +55,7 @@ describe('user service', function() {
     assert.deepEqual(['a', 'b', 'c', 'd'], item.tags)
     assert.deepEqual([], item.tags2)
     assert.deepEqual([], item.tags3)
+    assert.deepEqual(undefined, item.tags4)
     assert.deepEqual([], item.genres)
   })
 
@@ -78,8 +79,6 @@ describe('user service', function() {
     assert.equal(1, user.id);
     var user = await item.getEditedByUser()
     assert.equal(null, user);
-    //console.log(await item.getUser());
-    console.log();
   })
 
   it('should edit item', async function test() {
@@ -90,6 +89,7 @@ describe('user service', function() {
       name: 'Spartacus II',
       empty1: null,
       empty2: null,
+      actors: ['actor'],
       tags: ['a', 'b', 'c']
     }, 1)
 
@@ -107,6 +107,7 @@ describe('user service', function() {
       name: 'Spartacus II',
       empty1: [],
       empty2: '',
+      actors: undefined,
       tags: ['a', 'b', 'c']
     })
 
@@ -126,6 +127,13 @@ describe('user service', function() {
     assert.deepEqual([], item.json.tags)
     assert.equal(1, await Item.count())
     assert.equal(3, await Changelog.count())
+
+    // experimental method getItem()
+    assert.equal('Spartacus II', item.getItem().name)
+    assert.equal('', item.getItem().country)
+    assert.equal(1, item.getItem().id)
+    //assert.deepEqual([], item.json.tags)
+
   });
 
   it('should delete item', async function test() {

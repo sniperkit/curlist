@@ -34,6 +34,8 @@
               {% for element in item[field] %}
               <span class="tags-element">{{ element }}</span>
               {% endfor %}
+            {% elseif item[field] and item_schema[field] and item_schema[field].type == 'url' %}
+              <a target="_blank" href="{{ item[field] }}">{{ item[field] }}</a>
             {% else %}
               {{ item[field] }}
             {% endif %}

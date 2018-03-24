@@ -22,8 +22,8 @@
 
         {% for row in elements.data.buckets.slice(start, end) %}
         <li>
-        {#<a href='/?filters={"{{ name }}":["{{ row.key }}"]}'>{{ row.key }} ({{ row.doc_count }})</a><br />#}
-        {{ row.key }} ({{ row.doc_count }})<br />
+        <a href='/?filters={"{{ name }}":["{{ row.key }}"]}'>{{ row.key }} ({{ row.doc_count }})</a><br />
+        {#{{ row.key }} ({{ row.doc_count }})<br />#}
         </li>
         {% endfor %}
       </ul>

@@ -2,26 +2,16 @@ const Item = require('./../models/item');
 const _ = require('lodash');
 const itemsjs = require('itemsjs');
 const config = require('config');
+const service = require('./../services/service');
 
-module.exports = async function(done) {
+module.exports.getClient = async function() {
 
-  // it should goes to service and be get by cache(?)
-  var items = await Item.findAll({
-    order: [
-      ['id', 'DESC']
-    ]
-  })
+  var data = await service.allItems();
 
-  var data = _.map(items, v => {
-    return Object.assign({
-      id: v.id
-    }, v.json);
-  });
-
-  client = itemsjs(
+  // it should also process items
+  // for search
+  return itemsjs(
     data,
     config.get('search')
   )
-
-  done(client);
 }

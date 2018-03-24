@@ -1,7 +1,10 @@
+Vue.use(AsyncComputed)
 Vue.component('paginate', VuejsPaginate)
 
 var client;
 client = itemsjs([], configuration);
+
+var is_change = false;
 
 var vm = new Vue({
   el: '#el',
@@ -15,27 +18,31 @@ var vm = new Vue({
       filters[v] = [];
     })
 
+    var uri = URI();
+    var qs = uri.search(true);
+
+    if (qs.filters) {
+      filters = JSON.parse(qs.filters || '{}');
+    }
+
+    var query = qs.query || '';
+    var page = qs.page || 1;
+    var per_page = qs.per_page || 30;
+    //var sort = qs.sort || 'id_desc';
+    var sort = qs.sort || default_sort;
+
     return {
-      query: '',
+      query: query,
       initialized: false,
-      page: 1,
+      page: page,
+      per_page: per_page,
+      sort: sort,
       // initializing filters with empty arrays
       filters: filters,
     }
   },
   beforeMount: function () {
-
     var self = this;
-
-    $.ajax({
-      url: '/data',
-      method: 'GET',
-      success: function(result) {
-        console.log('mounted')
-        client.reindex(result.data);
-        self.initialized = true;
-      }
-    });
   },
   methods: {
     reset: function () {
@@ -59,6 +66,9 @@ var vm = new Vue({
       var index = this.filters[key].indexOf(filter);
       this.filters[key].splice(index, 1);
     },
+    removeQuery: function (key, filter) {
+      this.query = '';
+    },
     showEditItem: function (id) {
       return showEditItem(id);
     },
@@ -72,21 +82,73 @@ var vm = new Vue({
   watch: {
     query: function () {
       this.page = 1;
+
+      /*var uri = URI();
+      uri.removeSearch('query');
+      uri.addSearch('query', this.query);
+      History.pushState(null, document.title, decodeURIComponent(uri.href()));*/
+    },
+    filters: function () {
     }
   },
-  computed: {
+  asyncComputed: {
+
     searchResult: function () {
+
+      var self = this;
 
       // necessary for refreshing data
       this.initialized
 
-      var result = client.search({
+      // sync version
+      /*var result = client.search({
         query: this.query,
         page: this.page,
         per_page: 30,
         filters: this.filters
       })
-      return result
+      return result*/
+
+      //return new Promise(resolve =>
+        //setTimeout(() => resolve(result), 100))
+
+      return new Promise(resolve => {
+        $.ajax({
+          url: '/search',
+          data: {
+            query: this.query,
+            page: this.page,
+            per_page: this.per_page,
+            sort: this.sort,
+            filters: this.filters
+          },
+          method: 'GET',
+          success: function(data) {
+            console.log('initialized');
+            console.log(self.initialized);
+
+            if (is_change) {
+              var uri = URI();
+              uri.search({
+                page: self.page,
+                query: self.query,
+                sort: self.sort,
+                per_page: self.per_page,
+                filters: JSON.stringify(self.filters)
+              })
+              History.pushState(null, document.title, (uri.href()));
+            }
+
+            is_change = true;
+
+            //self.initialized = true;
+
+
+
+            return resolve(data);
+          }
+        });
+      })
     },
     breadcrumbs: function () {
 
@@ -139,6 +201,8 @@ function tagitInit(selector, name) {
 
         var query = extractLast(request.term)
 
+        console.log(query);
+
         $.ajax({
           url: '/facet/' + name,
           data: {
@@ -171,33 +235,39 @@ $('#generalModal').on('show.bs.modal', function () {
 
 
 $( document ).ready(function() {
-  var array = searchable_facets;
 
-  array.forEach(function(v) {
+  // it's not working immediately..
+  setTimeout(v => {
 
-    var selector = '#aggregation_autocomplete_' + v;
+    var array = searchable_facets;
+    array.forEach(function(v) {
 
-    $(selector).autocomplete({
-      minLength: 0,
-      source: function(request, response) {
+      var selector = '#aggregation_autocomplete_' + v;
 
-        $.ajax({
-          url: '/facet/' + v,
-          data: {
-            query: request.term
-          },
-          success: function(data) {
-            response(data);
-          }
-        });
-      },
-      select: function(event, ui) {
-        vm.addFilter(v, ui.item.label);
-        $(selector).val('');
-        return false;
-      }
+      $(selector).autocomplete({
+        minLength: 0,
+        source: function(request, response) {
+
+          $.ajax({
+            url: '/facet/' + v,
+            data: {
+              query: request.term
+            },
+            success: function(data) {
+              response(data);
+            }
+          });
+        },
+        select: function(event, ui) {
+          vm.addFilter(v, ui.item.label);
+          $(selector).val('');
+          return false;
+        }
+      })
     })
-  })
+
+  }, 1000)
+
 });
 
 
