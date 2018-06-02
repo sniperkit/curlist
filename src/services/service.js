@@ -138,18 +138,12 @@ module.exports.editItem = async function(id, body, user_id) {
     }
   })
 
-  await Item.update({
+  item = await item.update({
     json: json,
     edited_by_user_id: user_id
-  }, {
-    where: {
-      [Op.and]: {
-        id: id
-      }
-    }
   });
 
-  var item = await Item.findById(id);
+  //var item = await Item.findById(id);
 
   var old_changelog = await Changelog.find({
     order: [

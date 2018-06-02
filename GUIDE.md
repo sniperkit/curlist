@@ -33,6 +33,14 @@ NODE_ENV=example node_modules/.bin/sequelize db:migrate
 - prepare your data in json (array of objects)
 - customize and run `./scripts/import.js` which imports data
 
+#### Reindex data in ES
+
+It's getting all data from PSQL and index it in ES 
+
+```bash
+curl -XDELETE localhost:9200/index ; NODE_ENV=my_env node scripts/db-to-es.js
+```
+
 #### Configure website
 
 The website is mostly configured by yaml config file.
@@ -64,3 +72,26 @@ NODE_ENV=example npm start
 - rest options will be documented soon
 
 For example look into `./config/example.yaml`
+
+## Useful commands
+
+```bash
+# create or update a table
+node_modules/.bin/sequelize migration:generate --name changelog
+# make migration
+node_modules/.bin/sequelize db:migrate
+
+
+# create db user
+sudo -u postgres createuser mateusz
+# create db
+sudo -u postgres createdb curlist 
+# drop db
+sudo -u postgres dropdb curlist 
+
+# backup data
+pg_dump postgres://user:password@localhost:5432/curlist > backup.sql &
+
+# import backup data
+sudo -u postgres psql db_name < 'backup.sql'
+```

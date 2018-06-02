@@ -44,27 +44,14 @@
         {% if is_search_box == true %}
         <form class="navbar-form navbar-left" style="margin-left: 80px;">
           <div class="form-group">
-            {% verbatim %}
-            <input type="text" v-model="query" class="form-control" placeholder="Search">
-            {% endverbatim %}
+            <input type="text" id="main_query" id="main_query" name="query" value="{{ query }}" class="form-control" placeholder="Search over 1 MLN shops.." name="srch-term">
           </div>
         </form>
         {% endif %}
 
       </div>
 
-
-
-
-
-
-
-
-
       <div id="navbar">
-
-
-
 
       </div><!--/.nav-collapse -->
 
@@ -110,6 +97,7 @@
   </div>
 </div>
 
+{# to be deleted #}
 <script>
   var searchable_facets = {{ searchable_facets | debug | safe }};
   var configuration = {{ configuration | debug | safe }};
@@ -118,18 +106,17 @@
   var default_sort = {{ default_sort | debug | safe }};
 </script>
 
-<script src="https://cdn.rawgit.com/itemsapi/itemsjs/master/dist/itemsjs.js"></script>
+{#<script src="https://cdn.rawgit.com/itemsapi/itemsjs/master/dist/itemsjs.js"></script>#}
 {#<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>#}
 <script src="/libs/jquery-1.12.4.min/index.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-{#<script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>#}
+
+<script src="/libs/lodash/dist/lodash.min.js"></script>
 <script src="/libs/history.js/scripts/bundled/html4+html5/jquery.history.js"></script>
 <script src="/libs/urijs/src/URI.min.js"></script>
-<script src="/libs/vue/dist/vue.min.js"></script>
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js'></script>
 <script src="/libs/jquery-tagit/js/tag-it.min.js"></script>
-<script src="/libs/vuejs-paginate/index.js"></script>
-<script src="https://unpkg.com/vue-async-computed"></script>
+<script src="/assets/search.js"></script>
 <script src="/assets/custom.js"></script>
 
 

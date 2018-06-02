@@ -1,173 +1,4 @@
-Vue.use(AsyncComputed)
-Vue.component('paginate', VuejsPaginate)
 
-var client;
-client = itemsjs([], configuration);
-
-var is_change = false;
-
-var vm = new Vue({
-  el: '#el',
-
-  // responsible for reactive data
-  data: function () {
-
-    // making it more generic
-    var filters = {};
-    Object.keys(configuration.aggregations).map(function(v) {
-      filters[v] = [];
-    })
-
-    var uri = URI();
-    var qs = uri.search(true);
-
-    if (qs.filters) {
-      filters = JSON.parse(qs.filters || '{}');
-    }
-
-    var query = qs.query || '';
-    var page = qs.page || 1;
-    var per_page = qs.per_page || 30;
-    //var sort = qs.sort || 'id_desc';
-    var sort = qs.sort || default_sort;
-
-    return {
-      query: query,
-      initialized: false,
-      page: page,
-      per_page: per_page,
-      sort: sort,
-      // initializing filters with empty arrays
-      filters: filters,
-    }
-  },
-  beforeMount: function () {
-    var self = this;
-  },
-  methods: {
-    reset: function () {
-      var filters = {};
-      Object.keys(configuration.aggregations).map(function(v) {
-        filters[v] = [];
-      })
-
-      this.filters = filters;
-      this.page = 1;
-      this.query = '';
-    },
-    addFilter: function (facetName, filterName) {
-      this.filters[facetName].push(filterName);
-    },
-    goToPage: function (page) {
-      this.page = page;
-      return page;
-    },
-    removeFilter: function (key, filter) {
-      var index = this.filters[key].indexOf(filter);
-      this.filters[key].splice(index, 1);
-    },
-    removeQuery: function (key, filter) {
-      this.query = '';
-    },
-    showEditItem: function (id) {
-      return showEditItem(id);
-    },
-    showItem: function (id) {
-      return showItem(id);
-    },
-    deleteItem: function (id) {
-      return deleteItem(id);
-    }
-  },
-  watch: {
-    query: function () {
-      this.page = 1;
-
-      /*var uri = URI();
-      uri.removeSearch('query');
-      uri.addSearch('query', this.query);
-      History.pushState(null, document.title, decodeURIComponent(uri.href()));*/
-    },
-    filters: function () {
-    }
-  },
-  asyncComputed: {
-
-    searchResult: function () {
-
-      var self = this;
-
-      // necessary for refreshing data
-      this.initialized
-
-      // sync version
-      /*var result = client.search({
-        query: this.query,
-        page: this.page,
-        per_page: 30,
-        filters: this.filters
-      })
-      return result*/
-
-      //return new Promise(resolve =>
-        //setTimeout(() => resolve(result), 100))
-
-      return new Promise(resolve => {
-        $.ajax({
-          url: '/search',
-          data: {
-            query: this.query,
-            page: this.page,
-            per_page: this.per_page,
-            sort: this.sort,
-            filters: this.filters
-          },
-          method: 'GET',
-          success: function(data) {
-            console.log('initialized');
-            console.log(self.initialized);
-
-            if (is_change) {
-              var uri = URI();
-              uri.search({
-                page: self.page,
-                query: self.query,
-                sort: self.sort,
-                per_page: self.per_page,
-                filters: JSON.stringify(self.filters)
-              })
-              History.pushState(null, document.title, (uri.href()));
-            }
-
-            is_change = true;
-
-            //self.initialized = true;
-
-
-
-            return resolve(data);
-          }
-        });
-      })
-    },
-    breadcrumbs: function () {
-
-      var output = [];
-      var filters = this.filters;
-      Object.keys(filters).forEach(function(key) {
-
-        Object.keys(filters[key]).forEach(function(key2) {
-          output.push({
-            key: key,
-            val: filters[key][key2]
-          })
-        })
-      });
-
-      return output;
-    }
-  }
-});
 
 var showEditItem = function(id) {
 
@@ -454,3 +285,40 @@ $.ajaxSetup({
     $('.ajax-loader').hide();
   }
 });
+
+var showModalFacet = function(name, page) {
+
+  var uri = new URI();
+  var qs = uri.search(true);
+  var filters = JSON.parse(qs.filters || '{}');
+  var not_filters = JSON.parse(qs.not_filters || '{}');
+  var page = page || 1;
+
+  $.ajax({
+    url: '/modal-facet/' + name,
+    method: 'GET',
+    data: {
+      filters: filters,
+      not_filters: not_filters,
+      page: page
+    },
+    success: function(data) {
+      $('#modalContent').html(data);
+      $('#generalModal').modal({})
+    }
+  });
+
+  return false;
+}
+
+$(document).on('click', '.facet-modal-pagination', function (event) {
+  event.preventDefault()
+
+  var name = $(this).attr('class').split('facet-modal-name-')[1];
+  var name = name.split(' ')[0];
+  var page = $(this).attr('data-page')
+
+  showModalFacet(name, page);
+
+  return false;
+})

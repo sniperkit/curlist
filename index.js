@@ -17,20 +17,16 @@ const service = require('./src/services/service');
 const Item = require('./src/models/item');
 const User = require('./src/models/user');
 const Changelog = require('./src/models/changelog');
+
+require('./src/listeners/es.js');
+
 const listeners = config.get('listeners_path') ? require(config.get('listeners_path')) : {};
 const emitter = require('./src/clients/emitter');
 
 const i18n = require('./src/clients/i18n');
 app.use(i18n.init);
 
-var client;
-
-(async function() {
-  //client = await require('./src/clients/itemsjs').getClient();
-  client = await require('./src/clients/search').getClient();
-  console.log('itemsjs loaded');
-  console.log('search engine loaded');
-})();
+var client = require('./src/clients/elasticitems');
 
 const nunenv = require('./src/clients/nunenv')(app, './', {
   autoescape: true,
@@ -111,10 +107,52 @@ app.all('*', function(req, res, next) {
   next();
 })
 
-app.get(['/'], function(req, res) {
+app.get(['/'], async function(req, res) {
+
+  var query = req.query;
+
+  query.page = query.page || 1;
+  query.per_page = query.per_page || 30;
+  query.sort = req.query.sort || 'id_desc';
+
+  query.filters = JSON.parse(req.query.filters || '{}');
+  query.not_filters = JSON.parse(req.query.not_filters || '{}');
+
+  var query_string = '(enabled:true OR _missing_:enabled)';
+
+  var is_ajax = req.query.is_ajax || req.xhr;
+
+  var result = await client.search(query)
 
   return res.render('views/catalog', {
-    is_search_box: true
+    is_search_box: true,
+    items: result.data.items,
+    pagination: result.pagination,
+    aggregations: result.data.aggregations,
+    aggregations_config: config.get('search.aggregations'),
+    //queue_names: config.get('enrichment.fields'),
+    //pages_count_limit: pages_count_limit,
+    //categories: categories,
+    query: req.query.query,
+    page: query.page,
+    sort: query.sort,
+    //facets_open: facets_open,
+    is_ajax: is_ajax,
+    //permalink: permalink,
+    url: req.url,
+    sortings: _.chain(config.get('search.sortings')).pickBy(v => {
+      if (v.field.indexOf('position_') === -1) {
+        return true;
+      }
+      return false;
+    }).map((v, k) => {
+      return {
+        title: v.title,
+        name: k
+      };
+    }).value(),
+    filters: query.filters,
+    not_filters: query.not_filters,
   });
 })
 
@@ -125,8 +163,6 @@ app.get(['/facet/:name'], async function(req, res) {
     query: req.query.query,
     per_page: 10
   })
-
-  console.log(JSON.stringify(result, null, 2));
 
   return res.json(_.map(result.data.buckets, function(val) {
     return {
@@ -168,10 +204,6 @@ app.post(['/item/add'], async function(req, res) {
 
   await emitter.emitAsync('item.added', newItem, req.user_id);
 
-  // reindex data
-  var data = await service.allItems();
-  client.reindex(data);
-
   return res.json({});
 })
 
@@ -206,16 +238,44 @@ app.post(['/item/edit/:id'], async function(req, res) {
   var json = service.processItemForDB(req.body, config.get('item_schema'));
   var newItem = await service.editItem(req.params.id, json, req.user_id);
 
-  var result = await emitter.emitAsync('item.edited', newItem);
-  console.log('result');
-  console.log(result);
+  //var item = await Item.findById(req.params.id);
+  //req.body.last_user_id = req.user.id;
+  //req.body.last_activity = 'form-edit';
+  //item = await item.update(req.body);
+  //console.log(item);
+  return res.json({});
 
-  // reindex data
-  //client = await require('./src/clients/itemsjs').getClient();
-  var data = await service.allItems();
-  client.reindex(data);
+
+  //var result = await emitter.emitAsync('item.edited', newItem);
+  //console.log('result');
+  //console.log(result);
 
   return res.json({});
+})
+
+app.get('/modal-facet/:name', async function(req, res) {
+
+  var facet_conf = config.get('search.aggregations')[req.params.name] || {};
+
+  var merge = _.merge(_.omit(facet_conf, ['type']), {
+    field: req.params.name,
+    name: req.params.name,
+    filters: req.query.filters,
+    not_filters: req.query.not_filters,
+    page: req.query.page || 1,
+    per_page: 100,
+    size: 50000
+  })
+
+  var facet = await client.aggregation(merge)
+
+  return res.render('views/modals-content/facet', {
+    facet: facet,
+    pagination: facet.pagination,
+    filters: req.query.filters,
+    not_filters: req.query.not_filters,
+    name: req.params.name
+  });
 })
 
 app.get(['/facets'], async function(req, res) {
@@ -244,15 +304,13 @@ app.get(['/facets'], async function(req, res) {
 app.get(['/item/raw/:id'], async function(req, res) {
 
   var item = await Item.findById(req.params.id);
+  var item_es = await client.get(item.id);
+
 
   return res.render('views/modals-content/raw', {
-    item: item
+    item: item,
+    item_es: item_es
   });
-  /*return res.render('views/modals-content/raw', {
-    item: _.merge(item.json, {
-      id: item.id
-    })
-  });*/
 })
 
 app.get(['/item/:id'], async function(req, res) {
@@ -292,7 +350,7 @@ app.get(['/item/:id'], async function(req, res) {
  * not used right now but there will be itemsjs or elasticsearch data
  * get by ajax
  */
-app.get(['/search'], async function(req, res) {
+/*app.get(['/search'], async function(req, res) {
 
   var queries = req.query;
   console.log(queries);
@@ -302,10 +360,8 @@ app.get(['/search'], async function(req, res) {
   queries.sort = req.query.sort || 'id_desc';
 
   var result = await client.search(queries)
-  //var result = await elasticitems.search(queries);
-  //result.timings = {};
   return res.json(result)
-})
+})*/
 
 app.get(['/export'], async function(req, res) {
 

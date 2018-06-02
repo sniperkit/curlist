@@ -26,6 +26,11 @@ console.log(schema);
 (async function() {
   var items = await service.allItems();
 
+  items = _.map(items, v => {
+    v._id = v.id;
+    return v;
+  });
+
   elasticbulk.import(items, {
     index: process.env.INDEX || config.get('elasticsearch.index'),
     type: process.env.TYPE || config.get('elasticsearch.type'),
