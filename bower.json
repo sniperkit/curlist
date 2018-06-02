@@ -19,6 +19,7 @@
     "vue": "^2.5.16",
     "jquery-1.12.4.min": "https://code.jquery.com/jquery-1.12.4.min.js",
     "urijs": "^1.19.1",
-    "history.js": "^1.8.0"
+    "history.js": "^1.8.0",
+    "lodash": "^4.17.10"
   }
 }

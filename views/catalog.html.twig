@@ -1,80 +1,70 @@
-{% extends "views/layout.html.twig" %}
+{% import "views/macros/pagination.html.twig" as pag %}
+
+{% if is_ajax != true %}
+  {% extends "views/layout.html.twig" %}
+{% endif %}
 
 {% block content %}
 
-{% verbatim %}
-
-<div class="page-header" style="margin-top: 15px; margin-bottom: 10px;">
+<div class="page-header" style="margin-top: 20px;">
   <div class="btn-toolbar pull-right">
     <div class="btn-group">
-      <a href="/" type="button" class="btn btn-primary" onclick="return showAddItem();"><i class="fa fa-plus" aria-hidden="true"></i> Add item</a>
-      <a href="/export" style="margin-left: 5px;" type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Export to JSON</a>
+      <a href="/" type="button" class="btn btn-primary" onclick="showAddItem({{ item['id'] }}); return false;"><i class="fa fa-plus" aria-hidden="true"></i> Add item</a>
+      <a href="/export{{ url | build({page: 1}) }}" style="margin-left: 5px;" type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Export to csv</a>
     </div>
   </div>
-  <h2 style="margin-top: 0;">List of items ({{ searchResult.pagination.total }})</h2>
+  <h2 style="margin-top: 0;">List of items ({{pagination.total}})</h2>
 </div>
 
-<p class="text-muted">Search performed in {{ searchResult.timings.search }} ms, facets in {{ searchResult.timings.facets }} ms</p>
+<div class="">
 
-<div class="row">
-  <div class="col-md-2 col-xs-2">
-    <div v-for="facet in searchResult.data.aggregations">
-      <h5 style="margin-bottom: 5px;"><strong style="color: #337ab7;">{{ facet.title }}</strong></h5>
+  {% if 0 and query and not items.length %}
+  {% else %}
 
-      <div v-if="searchable_facets.indexOf(facet.name) !== -1" class="input-group" style="margin: 5px 0 5px 0;">
-        <input :id="'aggregation_autocomplete_' + facet.name " type="text" style="height: 25px;" value="" class="form-control aggregation_autocomplete ui-autocomplete-input" placeholder="Search..">
-      </div>
-
-      <ul class="browse-list list-unstyled long-list" style="margin-bottom: 0;">
-        <li v-for="bucket in facet.buckets">
-        <div class="checkbox block" style="margin-top: 0; margin-bottom: 0;">
-          <label>
-            <input class="checkbox" type="checkbox" v-model="filters[facet.name]" v-bind:value="bucket.key">
-            {{ bucket.key }} ({{ bucket.doc_count }})
-          </label>
-        </div>
-        </li>
-      </ul>
-    </div>
+  <div class="col-md-2" id="aggregations" style="padding-left: 0;">
+    {% include "views/aggregations.html.twig" %}
   </div>
+  <div class="col-md-10" style="padding-right: 0;">
 
-  <div class="col-md-10 col-xs-10">
+    <div class="clearfix"></div>
 
     <div class="pull-right" style="margin-bottom: 10px;">
-      <select id="select_per_page" v-model="per_page" class="form-control pull-left" style="width: auto; margin-top: 0px;">
+      <select id="select_per_page" name="select_per_page" class="form-control pull-left" style="width: auto; margin-top: 0px;">
         <option value="">Items per page</option>
-        <option v-for="v in per_page_list">{{ v }}</option>
+        {% for v in [10,20,30, 50, 100, 200, 500, 1000] %}
+        <option {% if pagination.per_page == v %}selected{% endif %} value="{{ v }}">{{ v }}</option>
+        {% endfor %}
       </select>
 
-      <select id="select_sorting" v-model="sort" class="form-control pull-left" style="width: auto; margin-top: 0px; margin-left: 10px;">
+      <select id="select_sorting" name="select_sorting" class="form-control pull-left" style="width: auto; margin-top: 0px; margin-left: 10px;">
         <option value="">Sort name</option>
-        <option v-for="v in sortings" v-bind:value="v.name">{{ v.title }}</option>
+        {% for v in sortings %}
+        <option {% if v.name == sort %}selected{% endif %} value="{{ v.name }}">{{ v.title }}</option>
+        {% endfor %}
       </select>
     </div>
 
-    <div class="clearfix"></div>
-
-
-    <div class="breadcrumbs" style="margin: 0 0 20px 0;">
-      <span v-for="filter of breadcrumbs" class="label label-default">{{ filter.val }}
-        <span href="#" style="cursor: pointer" v-on:click="removeFilter(filter.key, filter.val)" class="glyphicon glyphicon-remove"></span>
-      </span>
-
-      <span v-if="query" class="label label-default" style="">{{ query }}
-        <span v-on:click="removeQuery()" style="cursor: pointer" class="glyphicon glyphicon-remove"></span>
-      </span>
-
-      <span v-if="breadcrumbs.length || query" class="label label-default pull-right" v-on:click="reset()" style="cursor: pointer; margin-right: 0;">Clear filters
-        <span class="glyphicon glyphicon-remove"></span>
-      </span>
-    </div>
 
     <div class="clearfix"></div>
-    <!--<h3>List of items ({{ searchResult.pagination.total }})</h3>-->
-    <table class="table table-striped table-items">
+
+
+    {% include "views/breadcrumbs.html.twig" %}
+
+    <table class="table table-striped table-items" style="width: 100%;">
+    <thead>
+      <tr class="">
+        <th><input class="check-all" type="checkbox" /></th>
+      </tr>
+    </thead>
       <tbody>
-      <tr v-for="item of searchResult.data.items" v-bind:data-id="item.id">
-        <td><img style="width: 100px;" v-bind:src="item.image"></td>
+      {% for item in items %}
+      <tr data-toggle="collapse" data-target="#item{{ loop.index }}" data-id="{{ item.id }}" style="{% if item.is_prosperworks %}background-color: #F5FBFF;{% endif %}">
+
+        <td>
+          <input type="checkbox" class="item-checkbox" />
+        </td>
+
+        <td><img style="width: 100px;" src="{{ item.image }}"></td>
         <td></td>
         <td>
           <b>{{ item.name }}</b>
@@ -87,30 +77,83 @@
         <td>
           <span class="tags-element" v-for="tag in item.tags">{{ tag }}</span>
         </td>
+
+
+
         <td>
-          <a title="show details" href="#" class="action-icon" v-on:click="showItem(item.id);" v-on:click.prevent.self><i class="fa fa-window-maximize" aria-hidden="true"></i></a>
-          <a title="edit information" href="#" class="action-icon" v-on:click="showEditItem(item.id);" v-on:click.prevent.self><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-          <a title="delete item" href="#" class="action-icon" v-on:click="deleteItem(item.id);" v-on:click.prevent.self><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+          <a title="show details" href="#" class="action-icon" onclick="return showItem({{ item.id }});"><i class="fa fa-window-maximize" aria-hidden="true"></i></a>
+          <a title="edit information" href="#" class="action-icon" onclick="return showEditItem({{ item.id }});"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+          <a title="delete item" href="#" class="action-icon" onclick="return deleteItem({{ item.id }});"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
         </td>
       </tr>
+
+      {% endfor %}
       </tbody>
     </table>
-    <div class="clearfix"></div>
 
-    <div class="clearfix"></div>
 
-    <div class="pagination-bar text-center">
-      <paginate
-      :page-count="Math.ceil(searchResult.pagination.total / searchResult.pagination.per_page)"
-      :click-handler="goToPage"
-      :prev-text="'Prev'"
-      :next-text="'Next'"
-      :container-class="'pagination'">
-      </paginate>
+    <div class="clearfix">
     </div>
+    {% include "views/macros/pagination.html.twig" %}
+
+
+    <div class="pagination-bar text-right">
+      {{ pag.pagination_render(pagination, {
+        pages_count: 8
+      }) }}
+    </div>
+
+    {% endif %}
+
+    <br />
+    <br />
+    <br />
+    <br />
+
+
   </div>
-  <div class="clearfix" style="margin-bottom: 100px;"></div>
 </div>
-{% endverbatim %}
+
+{% endblock %}
+
+{% block before_head_end %}
+<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/start/jquery-ui.css" />
+{% endblock %}
+
+{% block before_body_end %}
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js'></script>
+
+<script>
+  $(function() {
+
+    {% for name, v in aggregations_config %}
+    {% if v.is_search %}
+
+    $("#aggregation_autocomplete_{{ name }}").autocomplete({
+      minLength: 0,
+      source: function(request, response) {
+
+        $.ajax({
+          url: '/facet/{{ name}}',
+          //dataType: 'jsonp',
+          data: {
+            query: request.term
+          },
+          success: function( data ) {
+            response( data );
+          }
+        });
+      },
+      select: function(event, ui) {
+        console.log(ui.item.label)
+        aggregationTrigger('{{ name }}', ui.item.label);
+        return false;
+      }
+    })
+
+    {% endif %}
+    {% endfor %}
+  });
+</script>
 
 {% endblock %}
