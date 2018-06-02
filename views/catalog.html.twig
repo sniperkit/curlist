@@ -58,7 +58,7 @@
     </thead>
       <tbody>
       {% for item in items %}
-      <tr data-toggle="collapse" data-target="#item{{ loop.index }}" data-id="{{ item.id }}" style="{% if item.is_prosperworks %}background-color: #F5FBFF;{% endif %}">
+      <tr data-toggle="collapse" data-target="#item{{ loop.index }}" data-id="{{ item.id }}">
 
         <td>
           <input type="checkbox" class="item-checkbox" />

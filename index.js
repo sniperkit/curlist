@@ -5,6 +5,9 @@ Promise.config({
   warnings: false
 })
 
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op
+
 const _ = require('lodash');
 const config = require('config');
 const PORT = process.env.PORT || 3000;
@@ -15,6 +18,7 @@ const itemsjs = require('itemsjs');
 const service = require('./src/services/service');
 
 const Item = require('./src/models/item');
+const helper = require('./src/helpers/general');
 const User = require('./src/models/user');
 const Changelog = require('./src/models/changelog');
 
@@ -102,8 +106,8 @@ app.all('*', function(req, res, next) {
   res.locals.configuration = config.get('search');
   res.locals.default_sort = config.get('default_sort');
 
-  console.log('user_id');
-  console.log(req.user_id);
+  //console.log('user_id');
+  //console.log(req.user_id);
   next();
 })
 
@@ -347,21 +351,23 @@ app.get(['/item/:id'], async function(req, res) {
 })
 
 /**
- * not used right now but there will be itemsjs or elasticsearch data
- * get by ajax
+ * remove items from index
  */
-/*app.get(['/search'], async function(req, res) {
+app.delete('/items', async function(req, res) {
 
-  var queries = req.query;
-  console.log(queries);
+  var ids = helper.getIds(req.body.ids);
+  console.log(ids);
 
-  queries.page = queries.page || 1;
-  queries.per_page = queries.per_page || 30;
-  queries.sort = req.query.sort || 'id_desc';
+  await Item.destroy({
+    where: {
+      id: {
+        [Op.in]: ids
+      }
+    }, individualHooks: true
+  })
 
-  var result = await client.search(queries)
-  return res.json(result)
-})*/
+  return res.json({});
+})
 
 app.get(['/export'], async function(req, res) {
 

@@ -322,3 +322,61 @@ $(document).on('click', '.facet-modal-pagination', function (event) {
 
   return false;
 })
+
+$(document).on('change', '.check-all', function( event ) {
+
+  if (this.checked) {
+    $('.item-checkbox').prop('checked', true);
+  } else {
+    $('.item-checkbox').prop('checked', false);
+  }
+})
+
+/**
+ * it should be after checking all buttons
+ */
+$(document).on('change', '.check-all,.item-checkbox', function(event) {
+
+  if (getSelectedItems().length > 0) {
+    $("#toolbar-footer").show();
+    $(".selected-items-number").text(getSelectedItems().length)
+  } else {
+    $("#toolbar-footer").hide();
+  }
+})
+
+var getSelectedItems = function() {
+  return $(".item-checkbox:checked").map(function(val) {
+    return $(this).closest('tr').attr('data-id');
+  }).get();
+}
+
+var deleteItemsBulk = function(id) {
+
+  var result = confirm('Are you sure?');
+
+  if (!result) {
+    return false;
+  }
+
+  if (!getSelectedItems().length) {
+    alert('Choose items');
+  } else {
+
+    $("#delete-items-bulk").text('Deleting ' + getSelectedItems().length + ' items from index..').attr('disabled','');
+
+    $.ajax({
+      url: '/items',
+      method: 'DELETE',
+      data: {
+        ids: getSelectedItems().join(',')
+      },
+      success: function(data) {
+        location.reload();
+      }
+    });
+  }
+
+  return false;
+}
+
