@@ -33,6 +33,14 @@ NODE_ENV=example node_modules/.bin/sequelize db:migrate
 - prepare your data in json (array of objects)
 - customize and run `./scripts/import.js` which imports data
 
+#### Reindex data in ES
+
+It's getting all data from PSQL and index it in ES 
+
+```bash
+curl -XDELETE localhost:9200/index ; NODE_ENV=my_env node scripts/db-to-es.js
+```
+
 #### Configure website
 
 The website is mostly configured by yaml config file.

@@ -17,6 +17,9 @@ const service = require('./src/services/service');
 const Item = require('./src/models/item');
 const User = require('./src/models/user');
 const Changelog = require('./src/models/changelog');
+
+require('./src/listeners/es.js');
+
 const listeners = config.get('listeners_path') ? require(config.get('listeners_path')) : {};
 const emitter = require('./src/clients/emitter');
 
@@ -201,10 +204,6 @@ app.post(['/item/add'], async function(req, res) {
 
   await emitter.emitAsync('item.added', newItem, req.user_id);
 
-  // reindex data
-  var data = await service.allItems();
-  //client.reindex(data);
-
   return res.json({});
 })
 
@@ -238,7 +237,6 @@ app.post(['/item/edit/:id'], async function(req, res) {
 
   var json = service.processItemForDB(req.body, config.get('item_schema'));
   var newItem = await service.editItem(req.params.id, json, req.user_id);
-
 
   //var item = await Item.findById(req.params.id);
   //req.body.last_user_id = req.user.id;
@@ -306,15 +304,13 @@ app.get(['/facets'], async function(req, res) {
 app.get(['/item/raw/:id'], async function(req, res) {
 
   var item = await Item.findById(req.params.id);
+  var item_es = await client.get(item.id);
+
 
   return res.render('views/modals-content/raw', {
-    item: item
+    item: item,
+    item_es: item_es
   });
-  /*return res.render('views/modals-content/raw', {
-    item: _.merge(item.json, {
-      id: item.id
-    })
-  });*/
 })
 
 app.get(['/item/:id'], async function(req, res) {
