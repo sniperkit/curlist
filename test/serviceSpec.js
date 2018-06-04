@@ -5,6 +5,7 @@ var service = require('./../src/services/service');
 const Item = require('./../src/models/item');
 const Changelog = require('./../src/models/changelog');
 const User = require('./../src/models/user');
+const listener = require('./../src/listeners/changelog');
 const _ = require('lodash');
 const sequelize = require('./../src/clients/sequelize');
 
@@ -68,8 +69,13 @@ describe('user service', function() {
       tags: ['a', 'b']
     }, 1)
 
+    var changelog = await Changelog.findLast();
+
     assert.equal(1, await Item.count())
     assert.equal(1, await Changelog.count())
+    assert.equal(1, await changelog.id)
+    assert.equal(true, await changelog.is_change)
+
     assert.equal(1, item.id)
     assert.equal('Spartacus', item.json.name)
     assert.deepEqual(['a', 'b'], item.json.tags)
@@ -93,8 +99,14 @@ describe('user service', function() {
       tags: ['a', 'b', 'c']
     }, 1)
 
+    var changelog = await Changelog.findLast();
+
     assert.equal(1, await Item.count())
     assert.equal(2, await Changelog.count())
+
+    assert.equal(2, await changelog.id)
+    assert.equal(true, await changelog.is_change)
+
     assert.equal('Spartacus II', item.json.name)
     assert.deepEqual(['a', 'b', 'c'], item.json.tags)
     var user = await item.getEditedByUser()
@@ -111,8 +123,11 @@ describe('user service', function() {
       tags: ['a', 'b', 'c']
     })
 
+    var changelog = await Changelog.findLast();
+    assert.equal(false, await changelog.is_change)
+
     assert.equal(1, await Item.count())
-    assert.equal(2, await Changelog.count())
+    assert.equal(3, await Changelog.count())
   });
 
   it('should edit item with empty value', async function test() {
@@ -122,18 +137,23 @@ describe('user service', function() {
       tags: []
     })
 
+    var changelog = await Changelog.findLast();
+
+    // tags changed
+    assert.equal(true, await changelog.is_change)
+
     assert.equal('Spartacus II', item.json.name)
     assert.equal('', item.json.country)
     assert.deepEqual([], item.json.tags)
+
     assert.equal(1, await Item.count())
-    assert.equal(3, await Changelog.count())
+    assert.equal(4, await Changelog.count())
 
     // experimental method getItem()
     assert.equal('Spartacus II', item.getItem().name)
     assert.equal('', item.getItem().country)
     assert.equal(1, item.getItem().id)
     //assert.deepEqual([], item.json.tags)
-
   });
 
   it('should delete item', async function test() {
@@ -141,6 +161,6 @@ describe('user service', function() {
     var item = await service.deleteItem(1)
 
     assert.equal(0, await Item.count())
-    assert.equal(3, await Changelog.count())
+    assert.equal(4, await Changelog.count())
   });
 })

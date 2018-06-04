@@ -24,3 +24,31 @@ module.exports.getIds = function(ids) {
   })
   .value()
 }
+
+/*module.exports.isFieldChange = function(val, old_val) {
+}*/
+
+module.exports.isChange = function(json, old_json) {
+
+  var changes = false;
+
+  _.keys(json).forEach(k => {
+
+    // ignore undefined values
+    if (json[k] === undefined) {
+      // it works like "continue" here
+      return;
+    }
+
+    if (
+      (!old_json[k] && !json[k]) ||
+      (!old_json[k] && _.isArray(json[k]) && !json[k].length)
+    ) {
+      // no changes
+    } else if (!_.isEqual(old_json[k], json[k])) {
+      changes = true;
+    }
+  })
+
+  return changes;
+}

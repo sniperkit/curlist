@@ -1,0 +1,53 @@
+{% extends "views/layout.html.twig" %}
+
+{% block content %}
+
+<div class="page-header" style="margin-top: 0;">
+  <h2 style="margin-top: 10px;">Configuration</h2>
+  <h4 class="text-left text-muted">Showing website configuration</h4>
+</div>
+
+<h3>Search</h3>
+
+This is responsible for sorting options and filters
+
+<pre>
+{{ search | debug }}
+</pre>
+
+<h3>Item schema</h3>
+
+Defines fields which are stored in our custom model
+
+<pre>
+{{ item_schema | debug }}
+</pre>
+
+<h3>Item page</h3>
+
+<pre>
+{{ item_page | debug }}
+</pre>
+
+<h3>Add page</h3>
+
+<pre>
+{{ add_page | debug }}
+</pre>
+
+<h3>Edit page</h3>
+
+<pre>
+{{ edit_page | debug }}
+</pre>
+
+<h3>Filters page</h3>
+
+<pre>
+{{ filters_page | debug }}
+</pre>
+
+{% endblock %}
+
+{% block before_body_end %}
+{% endblock %}
