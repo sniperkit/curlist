@@ -14,23 +14,6 @@ module.exports.findById  = async function(id) {
   })
 }
 
-module.exports.addItem = async function(body, user_id) {
-
-  var item = await Item.create({
-    json: body,
-    added_by_user_id: user_id
-  })
-
-  // should add item to changelog automatically
-  await Changelog.create({
-    user_id: user_id,
-    item_id: item.id,
-    json: body
-  })
-
-  return item;
-}
-
 /**
  * get json data from db and make additional preprocessing
  * for itemsjs or elasticsearch
@@ -97,74 +80,28 @@ module.exports.deleteItem = async function(id) {
   });
 }
 
+module.exports.addItem = async function(body, user_id) {
+
+  var item = await Item.create({
+    json: body,
+    added_by_user_id: user_id
+  })
+
+  return item;
+}
+
 module.exports.editItem = async function(id, body, user_id) {
 
   var item = await Item.findById(id);
 
-  // check if there are some changes
-  // if not then return
-  var changes = false;
+  //item.overrideJsonData(body);
 
-  _.keys(body).forEach(k => {
-
-    //!item.json[k] && _.isArray(body[k]) && !body[k].length => no changes
-    //!item.json[k] && !body[k] => no changes
-
-    // ignore undefined values
-    if (body[k] === undefined) {
-      // it works like "continue" here
-      return;
-    }
-
-    if (
-      (!item.json[k] && !body[k]) ||
-      (!item.json[k] && _.isArray(body[k]) && !body[k].length)
-    ) {
-      // no changes
-    } else if (!_.isEqual(item.json[k], body[k])) {
-      changes = true;
-    }
-  })
-
-  if (!changes) {
-    return item;
-  }
-
-  var json = _.merge(item.json, body);
-
-  _.keys(body).forEach(k => {
-    if (_.isArray(body[k])) {
-      json[k] = body[k];
-    }
-  })
+  var newJson = Object.assign(_.clone(item.json), body);
 
   item = await item.update({
-    json: json,
+    json: newJson,
     edited_by_user_id: user_id
   });
-
-  //var item = await Item.findById(id);
-
-  var old_changelog = await Changelog.find({
-    order: [
-      ['id', 'DESC']
-    ], where: {
-      [Op.and]: {
-        item_id: id
-      }
-    }
-  });
-
-  // probably it should goes to instance hook
-  // so then item goes to changelog automatically
-  // and we don't worry about sync
-  await Changelog.create({
-    user_id: user_id,
-    item_id: id,
-    is_first: false,
-    old_json: old_changelog.json,
-    json: item.json
-  })
 
   return item;
 }

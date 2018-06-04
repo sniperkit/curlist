@@ -44,7 +44,7 @@
         {% if is_search_box == true %}
         <form class="navbar-form navbar-left" style="margin-left: 80px;">
           <div class="form-group">
-            <input type="text" id="main_query" id="main_query" name="query" value="{{ query }}" class="form-control" placeholder="Search over 1 MLN shops.." name="srch-term">
+            <input type="text" id="main_query" id="main_query" name="query" value="{{ query }}" class="form-control" placeholder="Search over all items.." name="srch-term">
           </div>
         </form>
         {% endif %}
@@ -53,14 +53,14 @@
 
       <div id="navbar">
 
-      </div><!--/.nav-collapse -->
-
+      </div>
 
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
           {#<li><a href="/import">Import data</a></li>#}
           <li><a href="/facets">Filters</a></li>
           <li><a href="/changelog">Changelog</a></li>
+          <li><a href="/configuration">Configuration</a></li>
           {% if user %}
           <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ user[user_display_field] }} <span class="caret"></span></a>

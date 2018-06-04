@@ -25,6 +25,10 @@ It's necessary to create a tables structure of your database.
 If you use PSQL you need to create a database first
 
 ```bash
+# create migration
+NODE_ENV=example node_modules/.bin/sequelize migration:generate --name changelogs-is_change
+
+# run migrations
 NODE_ENV=example node_modules/.bin/sequelize db:migrate
 ```
 

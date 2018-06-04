@@ -13,7 +13,7 @@ const config = require('config');
 const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const logger = require('./src/clients/logger');
-const itemsjs = require('itemsjs');
+const json2csv = require('json2csv');
 
 const service = require('./src/services/service');
 
@@ -21,6 +21,7 @@ const Item = require('./src/models/item');
 const helper = require('./src/helpers/general');
 const User = require('./src/models/user');
 const Changelog = require('./src/models/changelog');
+//const multer  = require('multer');
 
 require('./src/listeners/es.js');
 
@@ -158,6 +159,44 @@ app.get(['/'], async function(req, res) {
     filters: query.filters,
     not_filters: query.not_filters,
   });
+})
+
+app.get(['/export'], async function(req, res) {
+
+  var query = req.query;
+
+  query.page = query.page || 1;
+  query.per_page = query.per_page || 50000;
+  query.sort = req.query.sort || 'id_desc';
+
+  query.filters = JSON.parse(req.query.filters || '{}');
+  query.not_filters = JSON.parse(req.query.not_filters || '{}');
+
+  var query_string = '(enabled:true OR _missing_:enabled)';
+
+  var is_ajax = req.query.is_ajax || req.xhr;
+
+  /**
+   * configuration should go to external helper
+   */
+  var result = await client.search(query);
+
+  var ids = _.map(result.data.items, v => {
+    return v.id;
+  });
+
+  var rows = await Item.findByIds(ids);
+
+  json = _.map(rows, row => {
+    return row.getExportData(req.user);
+  })
+
+  var result = json2csv({
+    data: json
+  });
+
+  res.attachment('exported-' + json.length + '-items.csv');
+  return res.status(200).send(result);
 })
 
 app.get(['/facet/:name'], async function(req, res) {
@@ -369,15 +408,6 @@ app.delete('/items', async function(req, res) {
   return res.json({});
 })
 
-app.get(['/export'], async function(req, res) {
-
-  var data = await service.allItems();
-
-  var filename = 'export.json';
-  res.attachment(filename);
-  return res.status(200).send(data);
-})
-
 app.get(['/profile'], function(req, res) {
 
   return res.render('views/users/profile', {
@@ -392,6 +422,60 @@ app.get(['/data'], async function(req, res) {
     data: data
   });
 })
+
+app.get(['/configuration'], function(req, res) {
+  return res.render('views/configuration.html.twig', {
+    search: config.get('search'),
+    item_schema: config.get('item_schema'),
+    default_sort: config.get('default_sort'),
+    per_page_list: config.get('per_page_list'),
+    item_page: config.get('item_page'),
+    add_page: config.get('add_page'),
+    edit_page: config.get('edit_page'),
+    filters_page: config.get('filters_page'),
+  });
+})
+
+app.get(['/import'], function(req, res) {
+  return res.render('basic/import', {
+    import_config: config.get('import')
+  });
+})
+
+//curl -v -F name="my-name" -F csv=@newitems.csv http://localhost:3001/import
+/*app.post(['/import'], multer({ inMemory: true }).single('csv'), async function(req, res) {
+
+  var text = req.file.buffer.toString();
+
+  var items = await service.csvToJson(text);
+
+  var processed_items = _.chain(items)
+    .map(v => {
+      v.domain = urlHelper.normalizeUrl(v.domain);
+      return _.pick(v, config.get('import.fields'))
+    })
+    .filter(v => {
+      return !!v.domain && v.domain.length < 20;
+    })
+    // otherwise unique error
+    .uniqBy('domain')
+    .value();
+
+  var result = await service.import(processed_items, {
+    user_id: req.user_id,
+    last_activity: 'import'
+  });
+
+  return res.render('basic/import', {
+    imported: true,
+    items: items,
+    created_count: result.created_count,
+    updated_count: result.updated_count,
+    ignored_count: items.length - processed_items.length,
+    stamp_name: result.stamp_name,
+    total_count: items.length,
+  });
+})*/
 
 app.listen(PORT, function () {
   logger.info('Your app listening on port %s!', PORT);
