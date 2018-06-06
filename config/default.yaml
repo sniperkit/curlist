@@ -60,3 +60,22 @@ search:
       field: id
       title: ID desc
       order: desc
+
+general:
+  # it's being used as a key for checking duplicates in import
+  main_field: ~
+
+export:
+  fields: ~ 
+  #fields: ['name', 'tags'] 
+
+import:
+  # get all fields
+  fields: ~
+  merge_fields: ~
+
+enrichment:
+  fields: ~
+
+changelog:
+  fields: ~

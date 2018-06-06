@@ -6,6 +6,7 @@ const elasticitems = require('./../clients/elasticitems');
 emitter.on('item.added', function(item) {
 
   logger.info('item "' + item.id + '" has been added')
+
   return elasticitems.add(item.getElasticData(), {
     refresh: true
   });

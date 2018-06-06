@@ -9,7 +9,12 @@
 <div class="page-header" style="margin-top: 20px;">
   <div class="btn-toolbar pull-right">
     <div class="btn-group">
-      <a href="/" type="button" class="btn btn-primary" onclick="showAddItem({{ item['id'] }}); return false;"><i class="fa fa-plus" aria-hidden="true"></i> Add item</a>
+
+      {#{% if user.is_admin %}#}
+      <a href="/import" type="button" class="btn btn-primary"><i class="fa fa-upload" aria-hidden="true"></i> Import</a>
+      {#{% endif %}#}
+
+      <a href="/" type="button" class="btn btn-primary" onclick="showAddItem({{ item['id'] }}); return false;" style="margin-left: 5px;"><i class="fa fa-plus" aria-hidden="true"></i> Add item</a>
       <a href="/export{{ url | build({page: 1}) }}" style="margin-left: 5px;" type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Export to csv</a>
     </div>
   </div>
