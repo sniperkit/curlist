@@ -9,12 +9,18 @@ exports.build = function(str, data) {
 }
 
 /**
- * should be normalize domain
+ * url to domain
  */
-exports.normalizeUrl = function(url) {
+module.exports.urlToDomain = function(url) {
 
   if (!url) {
-    return '';
+    return;
+  }
+
+  url = url.replace(/((http|https):\/\/)?(www.)?/, '');
+
+  if (url) {
+    url = url.toLowerCase();
   }
 
   if (!url.match('http')) {
@@ -26,3 +32,4 @@ exports.normalizeUrl = function(url) {
 
   return url;
 }
+

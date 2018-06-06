@@ -206,6 +206,24 @@ var showRawData = function (id) {
   return false;
 }
 
+var showChangelogRawData = function (id) {
+
+  if (id === undefined) {
+    return false;
+  }
+
+  $.ajax({
+    url: '/changelog/raw/' + id,
+    method: 'GET',
+    success: function(data) {
+      $('#modalContent').html(data);
+      $('#generalModal').modal({})
+    }
+  });
+
+  return false;
+}
+
 var showAddItem = function () {
 
   $.ajax({

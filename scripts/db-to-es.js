@@ -9,6 +9,7 @@ const elasticbulk = require('elasticbulk')
 const through2 = require('through2')
 const config = require('config');
 const service = require('./../src/services/service');
+const Item = require('./../src/models/item');
 
 var i = 0;
 
@@ -25,17 +26,29 @@ schema.id = {
   type: 'string'
 }
 
+schema.stamps = {
+  type: 'string',
+  index: 'not_analyzed'
+}
+
 console.log(schema);
 
 (async function() {
-  var items = await service.allItems();
 
-  items = _.map(items, v => {
-    v._id = v.id;
-    return v;
+  var items = await Item.findAll({
+    //raw: true
+    order: [
+      ['id', 'DESC']
+    ]
   });
 
-  elasticbulk.import(items, {
+  var data = _.map(items, v => {
+    //console.log(v.getElasticData());
+    return v.getElasticData();
+    //return module.exports.processItemForSearch(v.getItem());
+  });
+
+  elasticbulk.import(data, {
     index: process.env.INDEX || config.get('elasticsearch.index'),
     type: process.env.TYPE || config.get('elasticsearch.type'),
     limit: process.env.LIMIT,
@@ -43,7 +56,7 @@ console.log(schema);
     host: process.env.ES_HOST || config.get('elasticsearch.host'),
   }, schema)
   .then(function(res) {
-    console.log(i);
+    //console.log(i);
     process.exit()
   })
 })();

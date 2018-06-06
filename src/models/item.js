@@ -35,7 +35,7 @@ const Item = sequelize.define('Item', {
   updatedAt: Sequelize.DATE,
   deletedAt: Sequelize.DATE
 }, {
-  paranoid: true,
+  //paranoid: true,
   //freezeTableName: false,
 });
 
@@ -45,11 +45,23 @@ Item.prototype.getItem = function() {
   })
 }
 
+/**
+ * it's not mutating object
+ */
+Item.prototype.addStamp = function(stamp_name) {
+  return this.stamps ? this.stamps + ',' + stamp_name : stamp_name;
+}
+
+Item.prototype.getStampsArray = function() {
+  return this.stamps ? this.stamps.split(',') : [];
+}
+
 Item.prototype.getElasticData = function() {
 
   return _.merge(_.clone(this.json), {
     _id: this.id,
-    id: this.id
+    id: this.id,
+    stamps: this.getStampsArray()
   })
   //return psqlToEsHelper.convertItem(this.dataValues);
 }

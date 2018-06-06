@@ -1,6 +1,7 @@
 const nunjucks = require('nunjucks');
 const _ = require('lodash')
 const urlHelper = require('./../helpers/url');
+const helper = require('./../helpers/general');
 const moment = require('moment')
 const jsdiff = require('diff');
 
@@ -22,6 +23,10 @@ module.exports = function(app, path, options) {
 
   .addFilter('build', function(str, data) {
     return urlHelper.build(str, data);
+  })
+
+  .addGlobal('is_field_change', function(val, old_val) {
+    return helper.isFieldChange(val, old_val);
   })
 
   .addFilter('intval', function(obj) {

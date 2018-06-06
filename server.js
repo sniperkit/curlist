@@ -258,12 +258,11 @@ app.post(['/item/add'], async function(req, res) {
 /**
  * check acl here
  */
-app.post(['/item/delete/:id'], isAdmin, async function(req, res) {
+app.post(['/item/delete/:id'], async function(req, res) {
 
   var item = await service.deleteItem(req.params.id);
 
-  var data = await service.allItems();
-  client.reindex(data);
+  console.log('deleted');
 
   return res.json({
   });
@@ -349,6 +348,16 @@ app.get(['/facets'], async function(req, res) {
   });
 })
 
+app.get(['/changelog/raw/:id'], async function(req, res) {
+
+  var row = await Changelog.findById(req.params.id);
+
+  return res.render('views/modals-content/changelog_raw', {
+    row: row
+  });
+})
+
+
 app.get(['/item/raw/:id'], async function(req, res) {
 
   var item = await Item.findById(req.params.id);
@@ -401,7 +410,6 @@ app.get(['/item/:id'], async function(req, res) {
 app.delete('/items', async function(req, res) {
 
   var ids = helper.getIds(req.body.ids);
-  console.log(ids);
 
   await Item.destroy({
     where: {

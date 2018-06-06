@@ -1,6 +1,7 @@
 const Item = require('./../models/item');
 const Changelog = require('./../models/changelog');
 const Stamp = require('./../models/stamp');
+const urlHelper = require('./../helpers/url');
 const _ = require('lodash');
 const Sequelize = require('sequelize');
 const config = require('config');
@@ -108,7 +109,7 @@ module.exports.import = async function(data, options) {
             json: Object.assign(_.clone(item.json), body),
             last_activity: options.last_activity,
             last_user_id: options.user_id,
-            //stamps
+            stamps: item.addStamp(stamp_name)
             //edited_by_user_id: user_id
           });
 
@@ -168,7 +169,9 @@ module.exports.processItemForDB = function(body, schema) {
   schema = schema || {};
 
   _.keys(schema).forEach(k => {
-    if (schema[k].type === 'array' && _.isString(body[k])) {
+    if (schema[k].type === 'domain' && _.isString(body[k])) {
+      body[k] = urlHelper.urlToDomain(body[k]);
+    } else if (schema[k].type === 'array' && _.isString(body[k])) {
       body[k] = _.chain(body[k])
         .split(',')
         .filter(v => {
@@ -194,7 +197,7 @@ module.exports.deleteItem = async function(id) {
       [Op.and]: {
         id: id
       }
-    }
+    }, individualHooks: true
   });
 }
 
@@ -223,23 +226,4 @@ module.exports.editItem = async function(id, body, user_id) {
   });
 
   return item;
-}
-
-module.exports.allItems = async function() {
-
-  var items = await Item.findAll({
-    //raw: true
-    order: [
-      ['id', 'DESC']
-    ]
-  });
-
-  var data = _.map(items, v => {
-    return module.exports.processItemForSearch(v.getItem());
-    /*return Object.assign({
-      id: v.id
-    }, module.exports.processItemForSearch(v.getItem()));*/
-  });
-
-  return data;
 }
