@@ -66,39 +66,6 @@ $('#generalModal').on('show.bs.modal', function () {
 
 
 $( document ).ready(function() {
-
-  // it's not working immediately..
-  setTimeout(v => {
-
-    var array = searchable_facets;
-    array.forEach(function(v) {
-
-      var selector = '#aggregation_autocomplete_' + v;
-
-      $(selector).autocomplete({
-        minLength: 0,
-        source: function(request, response) {
-
-          $.ajax({
-            url: '/facet/' + v,
-            data: {
-              query: request.term
-            },
-            success: function(data) {
-              response(data);
-            }
-          });
-        },
-        select: function(event, ui) {
-          vm.addFilter(v, ui.item.label);
-          $(selector).val('');
-          return false;
-        }
-      })
-    })
-
-  }, 1000)
-
 });
 
 

@@ -21,6 +21,10 @@ var schema = _.chain(config.get('item_schema')).pickBy(v => {
   }
 }).value()
 
+schema.id = {
+  type: 'string'
+}
+
 console.log(schema);
 
 (async function() {

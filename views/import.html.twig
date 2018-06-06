@@ -1,0 +1,86 @@
+{% extends "views/layout.html.twig" %}
+
+{% block content %}
+
+<div class="page-header" style="margin-top: 0;">
+  <h2 style="margin-top: 10px;">Import data</h2>
+  <h4 class="text-left text-muted">Importing data by providing CSV file</h4>
+</div>
+
+{% if imported %}
+
+<p class="bg-success" style="padding: 5px;">Successful import</p>
+
+Info:
+<br />
+{#<ul>
+  <li>{{ items.length }} records has been updated</li>
+</ul>#}
+<ul>
+  <li>Trying to import {{ total_count }} records</li>
+  <li>{{ created_count }} records inserted into database</li>
+  <li>{{ updated_count }} records updated in database</li>
+  <li>{{ ignored_count }} ignored because have duplicate or missing URL</li>
+  {#{% if failedUrls.length %}
+  <li>{% for url in failedUrls %}<strong>{{ url }}</strong>, {% endfor %} - were ignored for unknown reason</li>
+  {% endif %}#}
+</ul>
+
+<a href='/?filters={"stamps":["{{ stamp_name }}"]}' type="button" class="btn btn-success">Go to imported records</a>
+{#<a href='/catalog' type="button" class="btn btn-success">Go to list</a>#}
+
+{% else %}
+
+Notes:
+<br />
+
+<ul>
+  <li>At the moment import is inserting / updating data</li>
+  <li>Primary key (main_field) in CSV is defined in configuration yaml `general.main_field`</li>
+  <li>It's recommended to test import on small data first and verify results</li>
+</ul>
+
+All import fields: {{ import_config.fields }}
+<span style="color: gray; cursor: pointer;" data-toggle="tooltip" data-placement="right" title="This list if up-to-date because it comes from configuration file" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+
+<br />
+Import fields with <strong>merge</strong> policy: {{ import_config.merge_fields }}
+<br />
+<br />
+
+<div class="col-md-4">
+  <form class="form-horizontal" action="/import" enctype="multipart/form-data" method="POST">
+    <fieldset>
+
+      <div class="form-group">
+        <label>File input</label>
+        <input type="file" name="csv">
+        <p class="help-block">Choose csv file with correct column names</p>
+      </div>
+
+      {#<div class="form-group">
+        <label for="">Name</label>
+        <input type="text" name="name" class="form-control" id="" placeholder="My import name">
+        <p class="help-block">If you choose name i.e. "My Import" then name will look like "my-import_1_05/10/17"</p>
+      </div>#}
+
+      <div class="form-group">
+        <button type="submit" class="btn pull-left btn btn-success" style="" id="">Import data</button>
+      </div>
+    </fieldset>
+  </form>
+</div>
+<div class="clearfix"></div>
+
+{% endif %}
+
+{% endblock %}
+
+{% block before_body_end %}
+<script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+{% endblock %}
+

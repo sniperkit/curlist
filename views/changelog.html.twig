@@ -28,7 +28,8 @@
       {{ row.id }}
     </td>
     <td>
-      <a href="#" onclick="return showItem({{ row.item_id }})">{{ row.Item['json'][item_display_field] }}</a>
+      {#<a href="#" onclick="return showItem({{ row.item_id }})">{{ row.Item['json'][item_display_field] }}</a>#}
+      <a href="#" onclick="return showItem({{ row.item_id }})">{{ row.item_id }}</a>
     </td>
     <td>
       {% if row.User %}

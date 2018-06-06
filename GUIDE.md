@@ -2,6 +2,11 @@
 
 ## Getting started
 
+- create configuration file
+- set database in yaml and make migration
+- configure fields in yaml
+- reindex ES (it'll create an empty index)
+
 #### Clone and install app from github
 
 ```bash
@@ -42,7 +47,7 @@ NODE_ENV=example node_modules/.bin/sequelize db:migrate
 It's getting all data from PSQL and index it in ES 
 
 ```bash
-curl -XDELETE localhost:9200/index ; NODE_ENV=my_env node scripts/db-to-es.js
+curl -XDELETE localhost:9200/curlist ; NODE_ENV=curlist node scripts/db-to-es.js           
 ```
 
 #### Configure website

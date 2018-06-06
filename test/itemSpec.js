@@ -27,10 +27,9 @@ describe('item', function() {
   it('should process item for db', async function test() {
 
     var item = await Item.create({
-      main_field: 'domain.com',
       json: {
+        domain: 'domain.com',
         b: 'b',
-        c: ['d']
       }
     })
 
@@ -38,17 +37,14 @@ describe('item', function() {
     assert.deepEqual('domain.com', item.main_field);
 
     var item = await item.update({
-      //main_field: 'domain.com',
       json: {
+        domain: 'domain2.com',
         a: 'a'
       }
     })
 
     assert.deepEqual(1, item.id);
-    //assert.deepEqual('domain2.com', item.main_field);
-    //assert.deepEqual('domain2.com', item.dataValues.main_field);
-    // it's not working here but it's ok in hooks
-    //assert.deepEqual('domain.com', item._previousDataValues.main_field);
+    assert.deepEqual('domain2.com', item.main_field);
   })
 
   xit('should override json data properly', async function test() {
