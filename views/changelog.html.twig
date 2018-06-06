@@ -15,68 +15,18 @@
       <th>ID</th>
       <th>Item</th>
       <th>User</th>
+      <th>Source</th>
       <th>Changes</th>
       <th>Is first</th>
+      <th>Is change</th>
+      <th>Raw</th>
       <th>Created At</th>
     </tr>
   </thead>
   <tbody>
   {% for row in rows %}
-  <tr>
-
-    <td>
-      {{ row.id }}
-    </td>
-    <td>
-      {#<a href="#" onclick="return showItem({{ row.item_id }})">{{ row.Item['json'][item_display_field] }}</a>#}
-      <a href="#" onclick="return showItem({{ row.item_id }})">{{ row.item_id }}</a>
-    </td>
-    <td>
-      {% if row.User %}
-      {#{{ row.User | debug }}#}
-      {{ row.User[user_display_field] }}
-      {% endif %}
-    </td>
-    <td>
-      {% for key, val in row.json %}
-      {#{% set val1 = row.old_json[key] | join(',') %}#}
-      {% set val1 = row.old_json[key] | join(',') %}
-      {% set val2 = row.json[key] | join(',') %}
-
-      {% if row.old_json and val1 != val2 | join(',') %}
-      {#{{ row.old_json | debug }}<br />
-      {{ row.json | debug }}<br />#}
-      {#{{ key }}<br />
-      {{ val1 }} <> {{ val2 }}<br />
-      {{ row.old_json | debug }}<br />#}
-      {#{{ diff(val1, val2) | debug }}#}
-
-      <strong>{{ key }}</strong><br />
-      {% if val1 and val2 %}
-      {% for chunk in diff(val1, val2) %}
-      <span style="{% if chunk.removed %}color: red;{% elif chunk.added %}color: green;{% endif %}">{{ chunk.value }}</span>
-      {% endfor %}
-      {% elseif val1 %}
-      <span style="color: red;">{{ val1 }}</span>
-      {% elseif val2 %}
-      <span style="color: green;">{{ val2 }}</span>
-      {% endif %}
-      <br />
-
-      {% endif %}
-      {% endfor %}
-      {#{{ row.json | debug }}#}
-      {#{{ row.old_json | debug }}#}
-    </td>
-    <td>
-      {% if row.is_first %}
-        <span style="">first</span>
-      {% endif %}
-    </td>
-    <td>
-      {{ row.createdAt | date() }}
-    </td>
-  </tr>
+    {#{% include "views/partials/changelog_row.html.twig" %}#}
+    {% include "views/partials/changelog_row_new.html.twig" %}
 
   {% endfor %}
 
