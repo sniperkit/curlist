@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const sequelize = require('./../clients/sequelize');
 const Item = require('./item');
 const User = require('./user');
+const _ = require('lodash');
 
 const Changelog = sequelize.define('Changelog', {
   json: Sequelize.JSON,
@@ -20,6 +21,23 @@ Changelog.findLast = async function(ids) {
       ['id', 'DESC']
     ]
   });
+}
+
+Changelog.prototype.getDisplayedField = function(field, item_field) {
+
+  var values = '';
+
+  if (this.dataValues[field] && this.dataValues[field][item_field]) {
+    values = this.dataValues[field][item_field]
+  }
+
+  if (values && _.isArray(values)) {
+    //console.log(values);
+    return values.join(',');
+    return _.sortBy(values).join(',');
+  }
+
+  return values;
 }
 
 Changelog.belongsTo(Item, {

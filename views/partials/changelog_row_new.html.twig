@@ -1,0 +1,72 @@
+<tr>
+  <td>
+    {{ row.id }}
+  </td>
+  <td>
+    {#<a href="#" onclick="return showItem('{{ row.Item.domain }}')">{{ row.Item.domain }}</a>#}
+    <a href="#" onclick="return showItem({{ row.item_id }})">{{ row.item_id }}</a>
+    {#<a href="#" onclick="return showItem({{ row.item_id }})">{{ row.item_id }}</a>#}
+  </td>
+  <td>
+    {% if row.User %}
+    {#{{ row.User | debug }}#}
+    {{ row.User.name }}
+    {% endif %}
+  </td>
+  <td>
+    {{ row.source }}
+    {#<i class="fa fa-pencil-square-o" aria-hidden="true"></i>#}
+  </td>
+  <td>
+
+    <div style="width: 500px; word-wrap: break-word; display: inline-block;">
+    {% for key, val in row.json %}
+
+    {#{{ row.old_json[key] }}
+    {{ row.json[key] }}#}
+
+    {#{% set val1 = row.old_json[key] | join(',') %}
+    {% set val2 = row.json[key] | join(',') %}#}
+    {% set val1 = row.getDisplayedField('old_json', key) %}
+    {% set val2 = row.getDisplayedField('json', key) %}
+
+    {% if is_field_change(val2, val1) %}
+
+    <strong>{{ key }}</strong><br />
+    {% if val1 and val2 %}
+
+    <span style="">
+    {% for chunk in diff(val1, val2) %}
+    <span style="{% if chunk.removed %}color: red;{% elif chunk.added %}color: green;{% endif %}">{{ chunk.value }}</span>
+    {% endfor %}
+    {% elseif val1 %}
+    <span style="color: red;">{{ val1 }}</span>
+    {% elseif val2 %}
+    <span style="color: green;">{{ val2 }}</span>
+    {% endif %}
+    </span>
+    <br />
+
+    {% endif %}
+    {% endfor %}
+
+    {#uncomment to see array of changes#}
+    {#{{ row.json | debug }}#}
+    {#{{ row.old_json | debug }}#}
+    </div>
+  </td>
+  <td>
+    {% if row.is_first %}
+    <span style="">first</span>
+    {% endif %}
+  </td>
+  <td>
+    {{ row.is_change }}
+  </td>
+  <td>
+  <a href="#" onclick="return showChangelogRawData({{ row['id'] }});">preview</a>
+  </td>
+  <td>
+    {{ row.createdAt | date() }}
+  </td>
+</tr>

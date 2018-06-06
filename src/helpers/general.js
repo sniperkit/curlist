@@ -25,10 +25,7 @@ module.exports.getIds = function(ids) {
   .value()
 }
 
-/*module.exports.isFieldChange = function(val, old_val) {
-}*/
-
-module.exports.isChange = function(json, old_json) {
+/*module.exports.isChange = function(json, old_json) {
 
   var changes = false;
 
@@ -51,4 +48,41 @@ module.exports.isChange = function(json, old_json) {
   })
 
   return changes;
+}*/
+
+module.exports.isFieldChange = function(val, old_val) {
+
+  var is_change = false;
+
+  var val = _.isString(val) ? val.replace(/\r/, '') : val;
+  var old_val = _.isString(old_val) ? old_val.replace(/\r/, '') : old_val;
+
+  // ignore undefined values
+  if (val === undefined) {
+    return;
+  }
+
+  if (
+    (!old_val && !val) ||
+    (!old_val && _.isArray(val) && !val.length)
+  ) {
+    // no is_change
+  } else if (!_.isEqual(old_val, val)) {
+    is_change = true;
+  }
+
+  return is_change;
+}
+
+module.exports.isChange = function(json, old_json) {
+  var is_change = false;
+
+  _.keys(json).forEach(k => {
+
+    if (module.exports.isFieldChange(json[k], old_json[k])) {
+      is_change = true;
+    }
+  })
+
+  return is_change;
 }

@@ -37,6 +37,7 @@ describe('data tools', function() {
 
     var item = await Item.findById(1);
     assert.equal(item.json.domain, 'amazon.com');
+    assert.equal(item.stamps, '0001');
     assert.deepEqual(item.json.tags, ['camera']);
     //assert.equal(item.stamps, '0001');
 
@@ -66,6 +67,7 @@ describe('data tools', function() {
     assert.equal(item.main_field, 'amazon.com');
     assert.equal(item.json.domain, 'amazon.com');
     assert.deepEqual(item.json.tags, ['camera', 'electronic']);
+    assert.equal(item.stamps, '0001,0002');
     //assert.equal(item.stamps, '0001,0002');
 
     var item = await Item.findById(2);

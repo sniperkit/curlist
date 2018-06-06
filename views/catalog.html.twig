@@ -69,10 +69,18 @@
           <input type="checkbox" class="item-checkbox" />
         </td>
 
-        <td><img style="width: 100px;" src="{{ item.image }}"></td>
-        <td></td>
+        {% if item.image %}
+        <td><img style="width: 50px;" src="{{ item.image }}"></td>
+        {% elseif item.domain %}
+        <td><img style="width: 50px;" src="https://logo.clearbit.com/{{ item.domain }}"></td>
+        {% endif %}
+
         <td>
+          {% if item.domain %}
+          <b>{{ item.domain }}</b>
+          {% elseif item.name %}
           <b>{{ item.name }}</b>
+          {% endif %}
           <br />
           {{ item.description }}
         </td>

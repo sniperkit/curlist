@@ -33,6 +33,7 @@ describe('user service', function() {
   it('should process item for db', async function test() {
     var item = service.processItemForDB({
       tags: 'a,b,c,d,d,d',
+      domain: 'http://domain.com/aaa',
       tags2: '',
       tags3: null,
       tags4: undefined,
@@ -50,10 +51,13 @@ describe('user service', function() {
         type: 'array'
       }, description: {
         type: 'text'
+      }, domain: {
+        type: 'domain'
       }
     })
 
     assert.deepEqual(['a', 'b', 'c', 'd'], item.tags)
+    assert.deepEqual('domain.com', item.domain)
     assert.deepEqual([], item.tags2)
     assert.deepEqual([], item.tags3)
     assert.deepEqual(undefined, item.tags4)
