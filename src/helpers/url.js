@@ -2,10 +2,10 @@ const urijs = require('urijs');
 const _ = require('lodash');
 
 exports.build = function(str, data) {
-  var url = new urijs(str || '');
-  var search = url.search(true);
-  url.search(_.extend(search, data));
-  return url.search();
+  var uri = new urijs(str || '');
+  var search = uri.search(true);
+  uri.search(_.extend(search, data));
+  return uri.normalizeQuery().toString();
 }
 
 /**

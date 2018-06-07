@@ -8,6 +8,16 @@ auth:
       - "email"
     callbackURL: "http://localhost:3005/auth/google/callback"
 
+elasticsearch:
+  host: localhost:9200
+  index: curlist
+  type: curlist
+
+redis: 
+  host: localhost
+  port: 6379
+  auth_pass: ~
+
 # go into ./locales/ to make translations
 locales: ['en']
 
@@ -75,7 +85,25 @@ import:
   merge_fields: ~
 
 enrichment:
-  fields: ~
+  fields: ['wtj']
 
 changelog:
   fields: ~
+
+integrations:
+  clearbit:
+    api_key: ~
+  hunter: 
+    api_key: ~
+  # github.com/digestoo/website-to-json-dockerized
+  wtj: 
+    url: http://localhost:5000
+    path: /wtj
+    fields: ~
+    #fields: ['meta_title', 'meta_description', 'meta_keywords', 'facebook', 'linkedin']
+
+  # github.com/digestoo/tech-detector
+  tech-detector: 
+    url: http://localhost:5001
+  google-nlp: ~
+  fullcontact: ~

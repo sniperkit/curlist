@@ -15,6 +15,8 @@ const bodyParser = require('body-parser');
 const logger = require('./src/clients/logger');
 const json2csv = require('json2csv');
 const multer  = require('multer');
+const kue = require('kue');
+const queue = Promise.promisifyAll(require('./src/clients/queue'));
 
 const service = require('./src/services/service');
 
@@ -147,7 +149,6 @@ app.get(['/'], async function(req, res) {
     sort: query.sort,
     //facets_open: facets_open,
     is_ajax: is_ajax,
-    //permalink: permalink,
     url: req.url,
     sortings: _.chain(config.get('search.sortings')).pickBy(v => {
       if (v.field.indexOf('position_') === -1) {
@@ -490,5 +491,85 @@ app.post(['/import'], multer({ inMemory: true }).single('csv'), async function(r
     total_count: items.length,
   });
 })
+
+app.post(['/bulk/enrichment'], async function(req, res) {
+
+  var ids = helper.getIds(req.body.ids);
+  logger.info(ids);
+
+  var rows = await Item.findAll({
+    where: {
+      id: {
+        [Op.in]: ids
+      }
+    }
+  });
+
+  var queue_name = req.body.queue_name;
+  var allowed_queues = config.get('enrichment.fields')
+
+  if (!queue_name || allowed_queues.indexOf(queue_name) === -1) {
+    return res.status(500).json({
+    });
+  }
+
+  await Promise.all(rows).map(item => {
+    queue.addJob(queue_name, {
+      id: item.id,
+      //domain: item.domain,
+      //name: item.domain,
+      title: item.json.domain,
+      body: {
+        last_user_id: req.user_id,
+        last_activity: queue_name
+      }
+    })
+  }, {concurrency: 3})
+
+  return res.json({
+    size: ids.length
+  });
+})
+
+/**
+ * remove jobs i.e.
+ * http://localhost:4000/queue/clean?type=failed
+ */
+app.get(['/queue/clean'], async function(req, res, next) {
+
+  var type = req.query.type  || 'failed';
+  var jobs = [];
+
+  if (type === 'inactive') {
+    jobs = await queue.inactiveAsync();
+  } else if (type === 'failed') {
+    jobs = await queue.failedAsync();
+  } else if (type === 'active') {
+    jobs = await queue.activeAsync();
+  }
+
+  await Promise.all(jobs)
+  .map(id => {
+
+    return new Promise(function(resolve, reject) {
+      kue.Job.get(id, function( err, job ) {
+        if (err) {
+          return reject('Problem with deleting job');
+        }
+
+        job.remove( function(){
+          console.log( 'removed ', job.id );
+          return resolve(job.id);
+        });
+      });
+    })
+  }, {concurrency: 30})
+
+  return res.json({
+    count: jobs.length
+  });
+})
+
+app.use('/queue', kue.app);
 
 module.exports = app;
