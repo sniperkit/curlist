@@ -365,3 +365,25 @@ var deleteItemsBulk = function(id) {
   return false;
 }
 
+var enrichmentItemsBulk = function(queue_name) {
+
+  if (!getSelectedItems().length) {
+    alert('Choose items');
+  } else {
+
+    $.ajax({
+      url: '/bulk/enrichment',
+      method: 'POST',
+      data: {
+        ids: getSelectedItems().join(','),
+        queue_name: queue_name
+      },
+      success: function(data) {
+        alert(data.size + ' items has been sent to queue!')
+        location.reload();
+      }
+    });
+  }
+
+  return false;
+}
