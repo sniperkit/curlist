@@ -82,7 +82,12 @@
           <b>{{ item.name }}</b>
           {% endif %}
           <br />
+
+          {% if item.description %}
           {{ item.description }}
+          {% elseif item.meta_description %}
+          {{ item.meta_description }}
+          {% endif %}
         </td>
         <td>
           <span class="tags-element" v-for="tag in item.usage">{{ tag }}</span>

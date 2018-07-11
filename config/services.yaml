@@ -1,0 +1,80 @@
+db: 
+  dialect: sqlite
+  storage: './sqlite/database_services.sqlite'
+  database: database_services
+  logging: false
+
+auth:
+  google: 
+    clientID: "563489254154-ic8bqfd9qmtsl1o8iap8p9gcaih1op9u.apps.googleusercontent.com"
+    clientSecret: "BEcgOdBtKil05qUHSKrEIlgQ"
+
+searchable_facets: ['usage', 'functions', 'ingredients']
+user_display_field: 'name'
+
+# we should define arrays here
+# all others are usually strings
+item_schema:
+  description: 
+    type: text
+  key_figures: 
+    type: text
+  tags: 
+    type: array
+  country: 
+    type: array
+  category: 
+    type: array
+
+filters_page:
+  # list of shown facets on filters page
+  facets_list: ~
+
+item_display_field: 'name'
+
+export:
+  fields_list: ['id', 'usage', 'name', 'meaning', 'functions', 'image', 'ingredients']
+
+item_page:
+  fields_list: 
+    - name 
+    - url
+    - meta_description 
+    - key_figures 
+    - tags
+    - country
+    - linkedin
+    - facebook
+  similar_list: ['tags']
+
+add_page: 
+  fields_list: 
+    - name 
+
+edit_page: 
+  fields_list: 
+    - name 
+    - key_figures 
+    - url
+    - tags
+    - category 
+    - country
+
+# customize search behaviour
+search:
+  searchableFields: ['title', 'tags', 'actors']
+  sortings: 
+    name_asc: 
+      field: name
+      order: asc
+  # this is how the filters on the left are generated
+  aggregations: 
+    tags: 
+      title: Tags
+      size: 10
+    category: 
+      title: category
+      size: 10
+    country: 
+      title: Country
+      size: 10

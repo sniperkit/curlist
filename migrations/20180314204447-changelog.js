@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Changelogs', {
+    return queryInterface.createTable('changelogs', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -28,6 +28,9 @@ module.exports = {
         allowNull: true,
         type: Sequelize.JSON
       },
+      is_change: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -40,6 +43,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Changelogs');
+    return queryInterface.dropTable('changelogs');
   }
 };

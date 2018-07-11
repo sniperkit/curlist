@@ -13,6 +13,7 @@ const Changelog = sequelize.define('Changelog', {
   updatedAt: Sequelize.DATE,
   item_id: Sequelize.INTEGER
 }, {
+  tableName: 'changelogs'
 });
 
 Changelog.findLast = async function(ids) {

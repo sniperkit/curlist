@@ -3,7 +3,13 @@
     "name": "Name",
     "usage": "Usage",
     "functions": "Functions",
-    "ingredients": "Ingredients"
+    "ingredients": "Ingredients",
+    "domain": "Domain",
+    "description": "Description",
+    "meta_title": "Meta title",
+    "meta_keywords": "Meta keywords",
+    "meta_description": "Meta description",
+    "tags": "Tags"
   }
 }
 

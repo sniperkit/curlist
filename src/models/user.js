@@ -46,6 +46,7 @@ module.exports = sequelize.define('User', {
     type: Sequelize.DATE
   }
 }, {
+  tableName: 'users',
   instanceMethods: {
   }
 });

@@ -16,6 +16,14 @@ const Item = sequelize.define('Item', {
   main_field: {
     type: Sequelize.STRING
   },
+  domain: {
+    allowNull: true,
+    type: Sequelize.STRING
+  },
+  email: {
+    allowNull: true,
+    type: Sequelize.STRING
+  },
   added_by_user_id: {
     type: Sequelize.INTEGER
   },
@@ -37,6 +45,7 @@ const Item = sequelize.define('Item', {
 }, {
   //paranoid: true,
   //freezeTableName: false,
+  tableName: 'items'
 });
 
 Item.prototype.getItem = function() {
@@ -58,11 +67,23 @@ Item.prototype.getStampsArray = function() {
 
 Item.prototype.getElasticData = function() {
 
+  var other = [];
+
+  if (this.json.meta_title) {
+    other.push('Meta title');
+  }
+
+  if (this.json.meta_description) {
+    other.push('Meta description');
+  }
+
   return _.merge(_.clone(this.json), {
     _id: this.id,
     id: this.id,
-    stamps: this.getStampsArray()
+    stamps: this.getStampsArray(),
+    other: other
   })
+
   //return psqlToEsHelper.convertItem(this.dataValues);
 }
 
@@ -72,6 +93,14 @@ Item.findByIds = async function(ids) {
       id: {
         [Op.in]: ids
       }
+    }
+  });
+}
+
+Item.findByDomain = async function(domain) {
+  return await Item.findAll({
+    where: {
+      domain: domain
     }
   });
 }
@@ -128,6 +157,8 @@ Item.prototype.getChangelogData = function(which) {
 }*/
 
 Item.hook('beforeUpdate', async (item, options) => {
+
+  // it's deprecated in first version
   var main_field = config.get('general.main_field');
 
   if (main_field && item['json'][main_field]) {
@@ -136,6 +167,8 @@ Item.hook('beforeUpdate', async (item, options) => {
 })
 
 Item.hook('beforeCreate', async (item, options) => {
+
+  // it's deprecated in first version
   var main_field = config.get('general.main_field');
 
   if (main_field && item['json'][main_field]) {

@@ -113,6 +113,9 @@ app.all('*', function(req, res, next) {
   res.locals.configuration = config.get('search');
   res.locals.default_sort = config.get('default_sort');
 
+  //console.log(config.get('integrations'))
+
+
   //console.log('user_id');
   //console.log(req.user_id);
   next();
@@ -394,10 +397,29 @@ app.get(['/item/:id'], async function(req, res) {
 
   //console.log(similars);
 
+  var page = 1;
+  var per_page = 50;
+
+  var offset = (page - 1) * per_page;
+
+  var changelogs = await Changelog.findAll({
+    limit: per_page,
+    offset: offset,
+    where: {
+      item_id: row.id,
+      is_change: true
+    },
+    include: [Item, User],
+    order: [
+      ['id', 'DESC']
+    ]
+  });
+
   return res.render('views/modals-content/item', {
     item: _.merge(service.processItemForDisplay(row.json), {
       id: row.id
     }),
+    changelog: changelogs,
     row: row,
     fields_list: config.get('item_page.fields_list'),
     similar_list: similar_list,
@@ -518,7 +540,8 @@ app.post(['/bulk/enrichment'], async function(req, res) {
       id: item.id,
       //domain: item.domain,
       //name: item.domain,
-      title: item.json.domain,
+      //title: item.json.domain,
+      json: item.json,
       body: {
         last_user_id: req.user_id,
         last_activity: queue_name
@@ -537,38 +560,27 @@ app.post(['/bulk/enrichment'], async function(req, res) {
  */
 app.get(['/queue/clean'], async function(req, res, next) {
 
-  var type = req.query.type  || 'failed';
+  var type = req.query.type || 'failed';
   var jobs = [];
 
-  if (type === 'inactive') {
-    jobs = await queue.inactiveAsync();
-  } else if (type === 'failed') {
-    jobs = await queue.failedAsync();
-  } else if (type === 'active') {
-    jobs = await queue.activeAsync();
-  }
+  var inactiveJobs = await queue.inactiveAsync();
+  var failedJobs = await queue.failedAsync();
+  var activeJobs = await queue.activeAsync();
+  var completeJobs = await queue.completeAsync();
 
-  await Promise.all(jobs)
-  .map(id => {
+  await queue.cleanJobs(inactiveJobs);
+  await queue.cleanJobs(failedJobs);
+  await queue.cleanJobs(activeJobs);
+  await queue.cleanJobs(completeJobs);
 
-    return new Promise(function(resolve, reject) {
-      kue.Job.get(id, function( err, job ) {
-        if (err) {
-          return reject('Problem with deleting job');
-        }
-
-        job.remove( function(){
-          console.log( 'removed ', job.id );
-          return resolve(job.id);
-        });
-      });
-    })
-  }, {concurrency: 30})
-
-  return res.json({
-    count: jobs.length
-  });
+  return res.render('views/queue-clean', {
+    inactive: inactiveJobs.length,
+    failed: failedJobs.length,
+    active: activeJobs.length,
+    complete: completeJobs.length
+  })
 })
+
 
 app.use('/queue', kue.app);
 

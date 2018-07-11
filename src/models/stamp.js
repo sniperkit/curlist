@@ -19,7 +19,7 @@ const Stamp = sequelize.define('Stamp', {
   //freezeTableName: true,
   //createdAt: 'created_at',
   updatedAt: false,
-  //tableName: 'stamps'
+  tableName: 'stamps'
 });
 
 Stamp.findLast = async function() {

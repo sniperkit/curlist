@@ -5,3 +5,19 @@ db:
   logging: false
 
 functions_path: ~
+
+general:
+  main_field: domain
+
+elasticsearch:
+  host: localhost:9200
+  index: curlist_test
+  type: curlist_test
+
+item_schema:
+  domain: 
+    type: string
+  tags: 
+    type: array
+  genres: 
+    type: array

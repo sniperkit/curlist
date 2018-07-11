@@ -56,6 +56,29 @@ var addJobs = function(bulk, options) {
   })
 }
 
+var cleanJobs = async function(ids, options) {
+
+  options = options || {};
+
+  await Promise.all(ids)
+  .map(id => {
+
+    return new Promise(function(resolve, reject) {
+      kue.Job.get(id, function( err, job ) {
+        if (err) {
+          return reject('Problem with deleting job');
+        }
+
+        job.remove( function() {
+          console.log( 'removed ', job.id );
+          return resolve(job.id);
+        });
+      });
+    })
+  }, {concurrency: options.concurrency || 30})
+}
+
 module.exports = queue;
 module.exports.addJobs = addJobs;
 module.exports.addJob = addJob;
+module.exports.cleanJobs = cleanJobs;

@@ -1,0 +1,46 @@
+<tr>
+  <td>
+    {{ row.id }}
+  </td>
+  <td>
+    <a href="#" onclick="return showItem({{ row.item_id }})">{{ row.item_id }}</a>
+  </td>
+  <td>
+    {% if row.User %}
+    {{ row.User[user_display_field] }}
+    {% endif %}
+  </td>
+  <td>
+    {% for key, val in row.json %}
+    {% set val1 = row.old_json[key] | join(',') %}
+    {% set val2 = row.json[key] | join(',') %}
+
+    {% if row.old_json and val1 != val2 | join(',') %}
+
+    <strong>{{ key }}</strong><br />
+    {% if val1 and val2 %}
+    {% for chunk in diff(val1, val2) %}
+    <span style="{% if chunk.removed %}color: red;{% elif chunk.added %}color: green;{% endif %}">{{ chunk.value }}</span>
+    {% endfor %}
+    {% elseif val1 %}
+    <span style="color: red;">{{ val1 }}</span>
+    {% elseif val2 %}
+    <span style="color: green;">{{ val2 }}</span>
+    {% endif %}
+    <br />
+
+    {% endif %}
+    {% endfor %}
+  </td>
+  <td>
+    {% if row.is_first %}
+      <span style="">first</span>
+    {% endif %}
+  </td>
+  <td>
+  <a href="#" onclick="return showChangelogRawData({{ row['id'] }});">preview</a>
+  </td>
+  <td>
+    {{ row.createdAt | date() }}
+  </td>
+</tr>

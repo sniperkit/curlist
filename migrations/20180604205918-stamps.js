@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Stamps', {
+    return queryInterface.createTable('stamps', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,6 +12,10 @@ module.exports = {
       number: Sequelize.INTEGER,
       name: Sequelize.STRING,
       stamp: Sequelize.STRING,
+      user_id: {
+        allowNull: true,
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         type: Sequelize.DATE
       },
@@ -22,6 +26,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Stamps');
+    return queryInterface.dropTable('stamps');
   }
 };

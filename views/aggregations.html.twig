@@ -28,20 +28,20 @@
         {% endfor %}
 
 
-        {% if in_array(aggregations[val.key].name, ['tags', 'country']) %}
+        {#{% if in_array(aggregations[val.key].name, ['tags', 'country']) %}
         {% set facet_key = 'empty_' + aggregations[val.key].name %}
         {% set empty_value = 'empty' %}
 
         <li>
         <div class="checkbox block text-muted" style="margin-top: 0; margin-bottom: 0;">
           <label>
-            {# show input and mark when checked #}
+            [> show input and mark when checked <]
             <input class="checkbox" type="checkbox" {% if (filter and filter.val == empty_value and filter.key == facet_key) or in_array(empty_value, filters[facet_key]) %}checked="checked"{% endif %} onclick="onAggregationClick(this, '{{aggregations[facet_key].name}}', '{{ empty_value }}');">
             Show empty ({{ aggregations[facet_key].doc_count }})
           </label>
         </div>
         </li>
-        {% endif %}
+        {% endif %}#}
 
         {% if aggregations[val.key].buckets.length > 2 and aggregations_config[val.key].type == 'terms' %}
           <li>
@@ -79,9 +79,11 @@
 
     </div>
 
+
     <div class="clearfix"></div>
 
     {% endif %}
   </div>
   {% endif %}
   {% endfor %}
+  <span class="text-muted">Developer help</span> <span style="color: gray; cursor: pointer;" data-toggle="tooltip" data-placement="right" title="In order to change facets go into config file and edit search.aggregations object" class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>

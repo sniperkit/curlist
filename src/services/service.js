@@ -61,6 +61,8 @@ module.exports.import = async function(data, options) {
   await Promise.all(data)
     .map(async body => {
 
+      console.log(body);
+
       //console.log(body);
 
       // its going through initial processing

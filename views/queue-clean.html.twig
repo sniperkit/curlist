@@ -1,0 +1,31 @@
+{% extends "views/layout.html.twig" %}
+
+{% block content %}
+
+<div class="page-header" style="margin-top: 0;">
+  <h2 style="margin-top: 0;">Queue clean</h2>
+  <h4 class="text-left text-muted">Small statistics about cleaned queue</h4>
+</div>
+
+Info:
+<br />
+<ul>
+  <li>Removed {{ inactive }} queued jobs</li>
+  <li>Removed {{ active }} active jobs</li>
+  <li>Removed {{ failed }} failed jobs</li>
+  <li>Removed {{ complete }} completed jobs</li>
+</ul>
+
+<a href="/" type="button" class="btn btn-default">Go to list</a>
+<a href="/queue" type="button" class="btn btn-default" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i> Go to queue</a>
+
+<div class="clearfix" style="margin-bottom: 20px;"></div>
+
+{% endblock %}
+
+
+{% block before_head_end %}
+{% endblock %}
+
+{% block before_body_end %}
+{% endblock %}

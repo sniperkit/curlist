@@ -1,0 +1,74 @@
+db: 
+  dialect: sqlite
+  storage: './sqlite/database_ziola.sqlite'
+  database: database_ziola
+  logging: false
+
+auth:
+  google: 
+    clientID: "563489254154-ic8bqfd9qmtsl1o8iap8p9gcaih1op9u.apps.googleusercontent.com"
+    clientSecret: "BEcgOdBtKil05qUHSKrEIlgQ"
+
+searchable_facets: ['usage', 'functions', 'ingredients']
+
+# we should define arrays here
+# all others are usually strings
+item_schema:
+  description: 
+    type: text
+  functions: 
+    type: array
+  usage: 
+    type: array
+  ingredients: 
+    type: array
+
+filters_page:
+  # list of shown facets on filters page
+  facets_list: ~
+
+item_display_field: 'name'
+
+export:
+  fields_list: ['id', 'usage', 'name', 'meaning', 'functions', 'image', 'ingredients']
+
+item_page:
+  fields_list: 
+    - name 
+    - usage
+    - functions
+    - ingredients
+  # it won't create a similar lists but only prepare data for you in view 
+  # for manual displaying
+  similar_list: ['usage', 'functions']
+
+add_page: 
+  fields_list: 
+    - name 
+
+edit_page: 
+  fields_list: 
+    - name 
+    - image
+    - usage
+    - functions
+    - ingredients
+
+# customize search behaviour
+search:
+  searchableFields: ['name', 'usage', 'functions', 'ingredients']
+  sortings: 
+    name_asc: 
+      field: name
+      order: asc
+  # this is how the filters on the left are generated
+  aggregations: 
+    usage: 
+      title: Usage
+      size: 10
+    functions: 
+      title: Functions
+      size: 10
+    ingredients: 
+      title: Ingredients
+      size: 10

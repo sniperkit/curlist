@@ -17,7 +17,12 @@ const elasticitems = require('./src/clients/elasticitems')
 
 queue.process('wtj', process.env.WTJ_CONCURRENCY || 1, async function(job, done) {
 
+  console.log(job.data);
+
+  // it should get from job.data.domain
   var item = await Item.findById(job.data.id);
+
+  console.log(item.json);
 
   if (!item) {
     return done('error: not found');
@@ -31,12 +36,10 @@ queue.process('wtj', process.env.WTJ_CONCURRENCY || 1, async function(job, done)
 
     // should make a proper join here
     var newJson = Object.assign(_.clone(item.json), _.pick(result, ['meta_title', 'meta_description', 'meta_keywords']))
-
     item.json = newJson;
-    //console.log(item.json);
 
-    //item.saveWtjData(result);
-    //item.last_user_id = job.data.body.last_user_id;
+    //await item.addData(_.pick(result, ['meta_title', 'meta_description', 'meta_keywords']))
+
     item.last_activity = 'wtj';
     await item.save();
 

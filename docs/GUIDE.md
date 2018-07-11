@@ -86,9 +86,9 @@ For example look into `./config/example.yaml`
 
 ```bash
 # create or update a table
-node_modules/.bin/sequelize migration:generate --name changelog
+NODE_ENV=domains node_modules/.bin/sequelize migration:generate --name unique-fields
 # make migration
-node_modules/.bin/sequelize db:migrate
+NODE_ENV=domains node_modules/.bin/sequelize db:migrate
 
 
 # create db user
@@ -103,4 +103,6 @@ pg_dump postgres://user:password@localhost:5432/curlist > backup.sql &
 
 # import backup data
 sudo -u postgres psql db_name < 'backup.sql'
+
+NODE_ENV=domains nodemon worker
 ```

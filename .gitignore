@@ -69,3 +69,5 @@ test/fixtures/google\.json
 
 config/development\.yaml
 data/*
+
+config/local*

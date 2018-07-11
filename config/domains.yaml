@@ -1,0 +1,97 @@
+auth:
+  google: 
+    clientID: ""
+    clientSecret: ""
+
+elasticsearch:
+  host: localhost:9200
+  index: domains
+  type: domains
+
+search_engine: 'elasticsearch'
+
+functions_path: './../../config/myfunctions'
+listeners_path: './src/listeners/index'
+
+searchable_facets: ['tags', 'actors', 'genres']
+
+# we should define arrays here
+# all others are usually strings
+item_schema:
+  domain: 
+    type: domain
+  tags: 
+    type: array
+  description: 
+    type: text
+  status: 
+    type: string
+  class: 
+    type: string
+
+filters_page:
+  # list of shown facets on filters page
+  facets_list: ['tags']
+
+item_page:
+  fields_list: 
+    - domain 
+    - description 
+    - meta_title 
+    - meta_keywords 
+    - meta_description 
+    #- status 
+    #- class 
+    - tags
+  # it won't create a similar lists but only prepare data for you in view 
+  # for manual displaying
+  similar_list: ['tags']
+
+add_page: 
+  fields_list:
+    - domain
+
+edit_page: 
+  fields_list: 
+    - domain 
+    - tags
+    - description
+
+general:
+  # it's being used as a key for checking duplicates in import
+  main_field: domain
+
+per_page_list: [10, 20, 30, 50, 100]
+
+default_sort: id_desc
+#default_sort: id_asc
+
+# customize search behaviour
+search:
+  sortings: 
+    id_asc: 
+      field: id
+      title: ID asc
+      order: asc
+    id_desc: 
+      field: id
+      title: ID desc
+      order: desc
+  # this is how the filters on the left are generated
+  aggregations: 
+    meta_keywords: 
+      conjunction: true
+      is_search: true
+      size: 10
+    tags: 
+      conjunction: true
+      is_search: true
+      size: 10
+    #status: {}
+    #class: {}
+    other: 
+      position: 10
+    stamps: {}
+
+export:
+  fields: ['domain', 'tags'] 

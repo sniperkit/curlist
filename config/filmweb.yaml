@@ -1,0 +1,134 @@
+db: 
+  #dialect: sqlite
+  #storage: './sqlite/database_filmweb.sqlite'
+  #database: database_filmweb
+  logging: false
+  url: postgres://mateusz:mateusz@localhost:5432/filmweb
+  native: true
+  ssl: true
+
+auth:
+  google: 
+    clientID: "563489254154-ic8bqfd9qmtsl1o8iap8p9gcaih1op9u.apps.googleusercontent.com"
+    clientSecret: "BEcgOdBtKil05qUHSKrEIlgQ"
+
+elasticsearch:
+  host: localhost:9200
+  index: filmweb3
+  type: filmweb3
+
+search_engine: 'elasticsearch'
+#search_engine: 'itemsjs'
+
+functions_path: './../../config/myfunctions'
+listeners_path: './src/listeners/index'
+
+searchable_facets: ['tags', 'actors', 'genres']
+
+# we should define arrays here
+# all others are usually strings
+item_schema:
+  url: 
+    type: url
+  description: 
+    type: text
+  tags: 
+    type: array
+  genres: 
+    type: array
+  actors: 
+    type: array
+  country: 
+    type: array
+
+# early prototype
+#acl:
+  #allowed_emails_editing: ['joe.doe@domain.com']
+  #allowed_export_types: ['json', 'yaml', 'csv']
+  #export_login_required: true
+  #filters_count_before_login: 3
+
+filters_page:
+  # list of shown facets on filters page
+  facets_list: ['tags', 'actors', 'genres']
+
+item_page:
+  fields_list: 
+    - name 
+    - original_name
+    - url
+    - description
+    - rating
+    - year
+    - votes
+    - director
+    - actors
+    - genres
+    - tags
+    - country 
+    - runtime 
+    - reviews_count 
+  # it won't create a similar lists but only prepare data for you in view 
+  # for manual displaying
+  similar_list: ['tags']
+
+add_page: 
+  fields_list:
+    - name
+
+edit_page: 
+  fields_list: 
+    - name 
+    - description
+    - actors
+    - genres
+    - tags
+
+general:
+  # it's being used as a key for checking duplicates in import
+  main_field: name
+
+per_page_list: [10, 20, 30, 50, 100]
+
+default_sort: id_desc
+#default_sort: id_asc
+
+# customize search behaviour
+search:
+  searchableFields: ['title', 'tags', 'actors', 'original_name']
+  sortings: 
+    id_asc: 
+      field: id
+      title: ID asc
+      order: asc
+    id_desc: 
+      field: id
+      title: ID desc
+      order: desc
+    rating_asc: 
+      field: rating
+      title: rating asc
+      order: asc
+    rating_desc: 
+      field: rating
+      title: rating desc
+      order: desc
+    year_asc: 
+      field: year
+      title: year asc
+      order: asc
+    year_desc: 
+      field: year
+      title: year desc
+      order: desc
+  # this is how the filters on the left are generated
+  aggregations: 
+    tags: 
+      conjunction: true
+      is_search: true
+      size: 10
+    actors: {}
+    genres: {}
+
+export:
+  fields: ['name', 'tags'] 

@@ -4,17 +4,7 @@
   <span class="text-muted">Created: {{ row.createdAt | date('D MMM YYYY') }}, updated {{ row.updatedAt | date('D MMM YYYY') }}</span>
 </div>
 <div class="modal-body item-view">
-  <div class="row" style="margin-bottom: 10px;">
-    <div class="col-sm-3">
-      <img class="img-responsive" src="{{ item.image }}" />
-    </div>
-    <div class="col-sm-9">
 
-      {#<a style="margin-bottom: 10px;" class="item-submit btn btn-default pull-right" onclick="return showEditItem({{ item['id'] }});">Edit</a>
-      <a style="margin-right: 5px;" class="item-submit btn btn-default pull-right" onclick="return showRawData({{ item['id'] }});">Raw data</a>
-
-      <a class="btn btn-default" onclick="navigateItem('left')"style="margin-left: 20px;"><i class="fa fa-arrow-left" aria-hidden="true"></i> Prev</a>
-      <a class="btn btn-default" onclick="navigateItem('right')">Next <i class="fa fa-arrow-right" aria-hidden="true"></i></a>#}
 
       <div class="text-right" style="margin-bottom: 10px;">
         <a style="" class="item-submit btn btn-default" onclick="return showEditItem({{ item['id'] }});">Edit</a>
@@ -24,64 +14,84 @@
       </div>
 
 
-      <table class="table table-striped">
-        <tbody>
 
-        {#list all fields with value#}
-        {#{% for key, val in item %}
-        <tr>
-          <td><b>{{ key }}</b></td>
-          <td>
-            {{ val }}
-          </td>
-        </tr>
-        {% endfor %}#}
 
-        {#list all fields configured by user#}
-        {% for field in fields_list %}
-        <tr>
-          <td><b>{{ __('item.' + field) }}</b></td>
-          <td>
-            {% if item[field] and item_schema[field] and item_schema[field].type == 'array' %}
-              {% for element in item[field] %}
-              <span class="tags-element">{{ element }}</span>
-              {% endfor %}
-            {% elseif item[field] and item_schema[field] and item_schema[field].type == 'url' %}
-              <a target="_blank" href="{{ item[field] }}">{{ item[field] }}</a>
-            {% else %}
-              {{ item[field] }}
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+  <div class="row" style="margin-bottom: 10px;">
+    <div class="col-sm-3">
+      {#<img class="img-responsive" src="{{ item.image }}" />#}
 
-      <a class="item-submit btn btn-default pull-right" onclick="return showEditItem({{ item['id'] }});">Edit</a>
+      <img class="img-responsive" src="https://logo.clearbit.com/{{ item.domain }}" style="margin: 0 auto;" />
 
-      <div class="clearfix"></div>
+    </div>
+    <div class="col-sm-9">
 
-      {% for similar in similar_list %}
-      <h4>Similar by {{ similar }}</h4>
-      {% for element in similars[similar].data.items %}
-        <div class="col-sm-3 col-md-3">
-          {#<div class="thumbnail" title="Similar properties" data-content="{{ item['functions'] | intersection(element['functions']) }}">#}
-          <div class="thumbnail" title="Similar properties">
-            <img src="{{ element.image }}" alt="{{ element.name }}" />
-            {#<a href="#" onclick="return showItem({{ item.id }})">
-              <img src="{{ element.image }}" alt="{{ element.name }}" />
-            </a>#}
-            <div class="caption">
-              {#<p><a href="/item/{{ element.permalink }}">{{ element.name }}</a></p>#}
-              {#<p>{{ element.name }}</p>#}
-              {#<p class="show-info" {% if item['usage'] %}data-content="{{ item['usage'] | intersection(element['usage']) }}"{% endif %}>{{ element.name }}</p>#}
-              <p class="show-info" {% if item[similar] %}data-content="{{ item[similar] | intersection(element[similar]) }}"{% endif %}>{{ element.name }}</p>
-            </div>
-          </div>
+
+
+      {#<a style="margin-bottom: 10px;" class="item-submit btn btn-default pull-right" onclick="return showEditItem({{ item['id'] }});">Edit</a>
+      <a style="margin-right: 5px;" class="item-submit btn btn-default pull-right" onclick="return showRawData({{ item['id'] }});">Raw data</a>
+
+      <a class="btn btn-default" onclick="navigateItem('left')"style="margin-left: 20px;"><i class="fa fa-arrow-left" aria-hidden="true"></i> Prev</a>
+      <a class="btn btn-default" onclick="navigateItem('right')">Next <i class="fa fa-arrow-right" aria-hidden="true"></i></a>#}
+
+      <ul class="nav nav-tabs" id="config-tabs">
+        <li role="presentation" class="active"><a href="#basic-tab">Basic</a></li>
+        <li role="presentation" class=""><a href="#changelog-tab">Changelog ({{ changelog.length }})</a></li>
+      </ul>
+
+      <div class="clearfix" style="margin-bottom: 20px;"></div>
+
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade active in" role="tabpanel" id="basic-tab">
+
+          <table class="table table-striped" style="margin-bottom: 0;">
+            <tbody>
+
+            {#list all fields with value#}
+            {#{% for key, val in item %}
+            <tr>
+              <td><b>{{ key }}</b></td>
+              <td>
+                {{ val }}
+              </td>
+            </tr>
+            {% endfor %}#}
+
+            {#list all fields configured by user#}
+            {% for field in fields_list %}
+            <tr>
+              <td><b>{{ __('item.' + field) }}</b></td>
+              <td>
+                {% if item[field] and item_schema[field] and item_schema[field].type == 'array' %}
+                  {% for element in item[field] %}
+                  <span class="tags-element">{{ element }}</span>
+                  {% endfor %}
+                {% elseif item[field] and item_schema[field] and item_schema[field].type == 'url' %}
+                  <a target="_blank" href="{{ item[field] }}">{{ item[field] }}</a>
+                {% elseif field == 'domain' %}
+
+                  <a target="_blank" href="http://{{ item[field] }}"><i class="fa fa-external-link" aria-hidden="true"></i> {{ item[field] }}</a>
+                {% else %}
+                  {{ item[field] }}
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
         </div>
-      {% endfor %}
-      <div class="clearfix"></div>
-      {% endfor %}
+
+        <div class="tab-pane" role="tabpanel" id="changelog-tab">
+          This feature is not active at the moment
+        </div>
+      </div>
+
+
+
+
+      <span class="dev-help">Developer help</span> <span  style="cursor: pointer;" data-toggle="tooltip" data-placement="right" title="In order to edit field list go to `item_page`" class="glyphicon glyphicon-info-sign dev-help" aria-hidden="true"></span>
+
+      {#<a class="item-submit btn btn-default pull-right" onclick="return showEditItem({{ item['id'] }});">Edit</a>#}
+
 
     </div>
 
@@ -98,3 +108,17 @@
     trigger: 'hover'
   })
 </script>
+
+<script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+<script>
+$('#config-tabs a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+</script>
+

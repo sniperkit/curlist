@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Items', {
+    return queryInterface.createTable('items', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -19,6 +19,39 @@ module.exports = {
         allowNull: true,
         type: Sequelize.INTEGER
       },
+      main_field: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+
+      last_user_id: {
+        allowNull: true,
+        type: Sequelize.INTEGER
+      },
+
+      last_activity: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      stamps: {
+        allowNull: true,
+        type: Sequelize.TEXT
+      },
+
+      email: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+
+      domain: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+
+      url: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
       deletedAt: {
         allowNull: true,
         //defaultValue: Sequelize.NOW,
@@ -33,6 +66,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Items');
+    return queryInterface.dropTable('items');
   }
 };
