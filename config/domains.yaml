@@ -17,6 +17,8 @@ searchable_facets: ['tags', 'actors', 'genres']
 
 # we should define arrays here
 # all others are usually strings
+# it's used for creating schema in ES 
+# and also in the system for proper displaying data
 item_schema:
   domain: 
     type: domain
