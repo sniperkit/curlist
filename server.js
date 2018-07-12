@@ -113,6 +113,8 @@ app.all('*', function(req, res, next) {
   res.locals.configuration = config.get('search');
   res.locals.default_sort = config.get('default_sort');
 
+  res.setHeader('X-Powered-By', 'Curlist')
+
   //console.log(config.get('integrations'))
 
 

@@ -85,12 +85,12 @@ import:
   merge_fields: ~
 
 enrichment:
-  fields: ['wtj']
+  fields: ['wtj', 'tech-detector', 'ecommerce-crawler']
 
 changelog:
   fields: ~
 
-integrations:
+plugins:
   clearbit:
     api_key: ~
   hunter: 
@@ -99,9 +99,6 @@ integrations:
   wtj: 
     url: http://localhost:5000
     path: /wtj
-    fields: ~
-    #fields: ['meta_title', 'meta_description', 'meta_keywords', 'facebook', 'linkedin']
-
   # github.com/digestoo/tech-detector
   tech-detector: 
     url: http://localhost:5001

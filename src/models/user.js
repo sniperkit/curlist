@@ -39,13 +39,17 @@ module.exports = sequelize.define('User', {
   github: {
     type: Sequelize.JSON
   },
-  createdAt: {
-    type: Sequelize.DATE
+  created_at: {
+    type: Sequelize.DATE,
+    field: 'created_at'
   },
-  updatedAt: {
-    type: Sequelize.DATE
+  updated_at: {
+    type: Sequelize.DATE,
+    field: 'updated_at'
   }
 }, {
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
   tableName: 'users',
   instanceMethods: {
   }

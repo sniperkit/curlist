@@ -16,10 +16,10 @@ module.exports = {
         allowNull: true,
         type: Sequelize.INTEGER
       },
-      createdAt: {
+      created_at: {
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         type: Sequelize.DATE
       }
     })

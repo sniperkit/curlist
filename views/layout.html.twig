@@ -105,6 +105,8 @@
       <span class="pull-left" style="margin: 5px 5px 0 0;">Selected <span class="selected-items-number"></span> items</span>
       <a id="delete-items-bulk" class="btn pull-left btn-default bulk-button" href="#" onclick="deleteItemsBulk(); return false;" style="margin-right: 5px;"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</a>
       <a id="enrichment-items-bulk" class="btn pull-left btn-default bulk-button" href="#" onclick="enrichmentItemsBulk('wtj'); return false;" style="margin-right: 5px;"><i class="fa fa-cloud-download" aria-hidden="true"></i> wtj</a>
+      <a id="enrichment-items-bulk" class="btn pull-left btn-default bulk-button" href="#" onclick="enrichmentItemsBulk('tech-detector'); return false;" style="margin-right: 5px;"><i class="fa fa-cloud-download" aria-hidden="true"></i> tech-detector</a>
+      {#<a id="enrichment-items-bulk" class="btn pull-left btn-default bulk-button" href="#" onclick="enrichmentItemsBulk('ecommerce-crawler'); return false;" style="margin-right: 5px;"><i class="fa fa-cloud-download" aria-hidden="true"></i> ecommerce-crawler</a>#}
     </div>
   </div>
 </div>
@@ -115,15 +117,6 @@
     </div>
   </div>
 </div>
-
-{# to be deleted #}
-<script>
-  var searchable_facets = {{ searchable_facets | debug | safe }};
-  var configuration = {{ configuration | debug | safe }};
-  var sortings = {{ sortings | debug | safe }};
-  var per_page_list = {{ per_page_list | debug | safe }};
-  var default_sort = {{ default_sort | debug | safe }};
-</script>
 
 {#<script src="https://cdn.rawgit.com/itemsapi/itemsjs/master/dist/itemsjs.js"></script>#}
 {#<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>#}

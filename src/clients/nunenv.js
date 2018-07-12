@@ -111,5 +111,12 @@ module.exports = function(app, path, options) {
     }
   })
 
+  .addFilter('dateFrom', function(obj, locales) {
+    if (obj) {
+      moment.locale('en')
+      return moment(obj).fromNow();
+    }
+  })
+
   return nunenv
 }

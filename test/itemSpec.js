@@ -47,7 +47,7 @@ describe('item', function() {
     assert.deepEqual('domain2.com', item.main_field);
   })
 
-  xit('should override json data properly', async function test() {
+  it('should override json data properly', async function test() {
 
     var item = await Item.build({
       json: {
@@ -62,8 +62,6 @@ describe('item', function() {
     item.overrideJsonData({
       tags: ['a']
     })
-
-    //console.log(item);
 
     assert.equal(item.json.name, 'name');
     assert.deepEqual(item.json.tags, ['a']);

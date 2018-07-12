@@ -55,10 +55,10 @@ module.exports = {
         allowNull: true,
         type: Sequelize.JSON
       },
-      createdAt: {
+      created_at: {
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         type: Sequelize.DATE
       }
     });

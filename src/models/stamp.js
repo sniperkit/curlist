@@ -11,13 +11,13 @@ const Stamp = sequelize.define('Stamp', {
   name: Sequelize.STRING,
   stamp: Sequelize.STRING,
   user_id: Sequelize.INTEGER,
-  createdAt: {
-    allowNull: false,
-    type: Sequelize.DATE
+  created_at: {
+    type: Sequelize.DATE,
+    field: 'created_at'
   }
 }, {
   //freezeTableName: true,
-  //createdAt: 'created_at',
+  createdAt: 'created_at',
   updatedAt: false,
   tableName: 'stamps'
 });

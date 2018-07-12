@@ -1,27 +1,6 @@
 <tr>
   <td>
-    {{ row.id }}
-  </td>
-  <td>
-    {#<a href="#" onclick="return showItem('{{ row.Item.domain }}')">{{ row.Item.domain }}</a>#}
-    <a href="#" onclick="return showItem({{ row.item_id }})">
-      {% if row.json.domain %}
-      {{ row.json.domain }}
-      {% else %}
-      {{ row.item_id }}
-      {% endif %}
-    </a>
-    {#<a href="#" onclick="return showItem({{ row.item_id }})">{{ row.item_id }}</a>#}
-  </td>
-  <td>
-    {% if row.User %}
-    {#{{ row.User | debug }}#}
-    {{ row.User.name }}
-    {% endif %}
-  </td>
-  <td>
     {{ row.source }}
-    {#<i class="fa fa-pencil-square-o" aria-hidden="true"></i>#}
   </td>
   <td>
 
@@ -56,23 +35,9 @@
     {% endif %}
     {% endfor %}
 
-    {#uncomment to see array of changes#}
-    {#{{ row.json | debug }}#}
-    {#{{ row.old_json | debug }}#}
     </div>
   </td>
   <td>
-    {% if row.is_first %}
-    <span style="">first</span>
-    {% endif %}
-  </td>
-  <td>
-    {{ row.is_change }}
-  </td>
-  <td>
-  <a href="#" onclick="return showChangelogRawData({{ row['id'] }});">preview</a>
-  </td>
-  <td>
-    {{ row.created_at | date() }}
+    {{ row.created_at | dateFrom() }}
   </td>
 </tr>

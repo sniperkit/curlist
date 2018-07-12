@@ -9,10 +9,18 @@ const Changelog = sequelize.define('Changelog', {
   old_json: Sequelize.JSON,
   is_first: Sequelize.BOOLEAN,
   is_change: Sequelize.BOOLEAN,
-  createdAt: Sequelize.DATE,
-  updatedAt: Sequelize.DATE,
+  created_at: {
+    type: Sequelize.DATE,
+    field: 'created_at'
+  },
+  updated_at: {
+    type: Sequelize.DATE,
+    field: 'updated_at'
+  },
   item_id: Sequelize.INTEGER
 }, {
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
   tableName: 'changelogs'
 });
 

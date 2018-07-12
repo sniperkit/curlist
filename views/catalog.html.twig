@@ -77,7 +77,9 @@
 
         <td>
           {% if item.domain %}
-          <b>{{ item.domain }}</b>
+
+
+          <b><a href="#" class="action-icon" onclick="return showItem({{ item.id }});">{{ item.domain }}</a></b>
           {% elseif item.name %}
           <b>{{ item.name }}</b>
           {% endif %}
@@ -89,14 +91,13 @@
           {{ item.meta_description }}
           {% endif %}
         </td>
-        <td>
+
+        {#<td>
           <span class="tags-element" v-for="tag in item.usage">{{ tag }}</span>
         </td>
         <td>
           <span class="tags-element" v-for="tag in item.tags">{{ tag }}</span>
-        </td>
-
-
+        </td>#}
 
         <td>
           <a title="show details" href="#" class="action-icon" onclick="return showItem({{ item.id }});"><i class="fa fa-window-maximize" aria-hidden="true"></i></a>

@@ -31,11 +31,11 @@ module.exports = {
       is_change: {
         type: Sequelize.BOOLEAN
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE
       }

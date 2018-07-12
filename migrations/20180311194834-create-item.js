@@ -52,15 +52,15 @@ module.exports = {
         allowNull: true,
         type: Sequelize.STRING
       },
-      deletedAt: {
+      deleted_at: {
         allowNull: true,
         //defaultValue: Sequelize.NOW,
         type: Sequelize.DATE
       },
-      createdAt: {
+      created_at: {
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         type: Sequelize.DATE
       }
     });

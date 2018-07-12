@@ -39,10 +39,22 @@ const Item = sequelize.define('Item', {
   stamps: {
     type: Sequelize.TEXT
   },
-  createdAt: Sequelize.DATE,
-  updatedAt: Sequelize.DATE,
-  deletedAt: Sequelize.DATE
+  deleted_at: {
+    type: Sequelize.DATE,
+    field: 'deleted_at'
+  },
+  created_at: {
+    type: Sequelize.DATE,
+    field: 'created_at'
+  },
+  updated_at: {
+    type: Sequelize.DATE,
+    field: 'updated_at'
+  }
 }, {
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
+  deletedAt: 'deleted_at',
   //paranoid: true,
   //freezeTableName: false,
   tableName: 'items'
@@ -152,9 +164,9 @@ Item.prototype.getChangelogData = function(which) {
   //return _.pick(this.dataValues, fields);
 }
 
-/*Item.prototype.overrideJsonData = function(body) {
-  Object.assign(this.json, body);
-}*/
+Item.prototype.overrideJsonData = function(body) {
+  this.json = Object.assign(_.clone(this.json), body);
+}
 
 Item.hook('beforeUpdate', async (item, options) => {
 

@@ -22,6 +22,8 @@ item_schema:
     type: domain
   tags: 
     type: array
+  tech: 
+    type: array
   description: 
     type: text
   status: 
@@ -82,13 +84,18 @@ search:
     meta_keywords: 
       conjunction: true
       is_search: true
+      position: 80
       size: 10
     tags: 
       conjunction: true
       is_search: true
+      position: 90
       size: 10
-    #status: {}
-    #class: {}
+    tech: 
+      conjunction: true
+      is_search: true
+      position: 70
+      size: 10
     other: 
       position: 10
     stamps: {}
